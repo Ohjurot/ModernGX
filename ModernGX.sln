@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31606.5
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ModernGXLib", "ModernGXLib\ModernGXLib.vcxproj", "{525D5320-49AF-429B-9B80-94AF9CBAA01F}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MGXApp", "MGXApp\MGXApp.vcxproj", "{B42900B9-E6E3-4D60-8638-D02F9AA1E42E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{525D5320-49AF-429B-9B80-94AF9CBAA01F} = {525D5320-49AF-429B-9B80-94AF9CBAA01F}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{525D5320-49AF-429B-9B80-94AF9CBAA01F}.Debug|x64.ActiveCfg = Debug|x64
+		{525D5320-49AF-429B-9B80-94AF9CBAA01F}.Debug|x64.Build.0 = Debug|x64
+		{525D5320-49AF-429B-9B80-94AF9CBAA01F}.Release|x64.ActiveCfg = Release|x64
+		{525D5320-49AF-429B-9B80-94AF9CBAA01F}.Release|x64.Build.0 = Release|x64
+		{B42900B9-E6E3-4D60-8638-D02F9AA1E42E}.Debug|x64.ActiveCfg = Debug|x64
+		{B42900B9-E6E3-4D60-8638-D02F9AA1E42E}.Debug|x64.Build.0 = Debug|x64
+		{B42900B9-E6E3-4D60-8638-D02F9AA1E42E}.Release|x64.ActiveCfg = Release|x64
+		{B42900B9-E6E3-4D60-8638-D02F9AA1E42E}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A6EF68F3-79ED-461B-A073-E0945B023C58}
+	EndGlobalSection
+EndGlobal
