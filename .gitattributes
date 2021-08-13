@@ -1,0 +1,2 @@
+ModernGXLib/vendor/* linguist-vendored
+*.h linguist-language=c++
