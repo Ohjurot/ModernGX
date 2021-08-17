@@ -1,21 +1,43 @@
 #include <ModernGX.h>
 #include <ModernGX/Foundation/HRException.h>
+#include <ModernGX/Core/GFXWindow.h>
 #include <ModernGX/Core/GPU/GPUDevice.h>
+#include <ModernGX/Core/GPU/GPUQueue.h>
 
 using namespace MGX;
 
 INT wWinMain_safe(HINSTANCE hInstance, PWSTR cmdArgs, INT cmdShow) {
+    // Enable debug layer
+    #ifdef _DEBUG
     ComPointer<ID3D12Debug> dbg;
     if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&dbg)))) {
         dbg->EnableDebugLayer();
     }
+    #endif
     
-    // Two device
+    // Device
     Core::GPU::Device device;
-
-    ComPointer<ID3D12Device9> device9 = device.As<ID3D12Device9>();
+    Core::GPU::CommandQueue queue(device);
     
+    // Create window
+    Core::Window wnd(L"My Window", queue);
 
+    // Prcoess window events
+    while (wnd.ProcessWindowEvents()) {
+        // Window resizing
+        if (wnd.NeedsResizing()) {
+            queue.Flush(2);
+            wnd.ResizeNow();
+        }
+
+        // TODO: Render loop
+        
+        // Present frame
+        wnd.Present();
+    }
+
+    // Flush Queue
+    queue.Flush(2);
     return 0;
 }
 

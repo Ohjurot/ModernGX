@@ -1,11 +1,17 @@
 #pragma once
 
-// Setup and include windows
+// Setup windows
 #define NOMINMAX
 #define NOGDI
 #define NOOPENFILE
 
+// Include windows
 #include <Windows.h>
+
+// Windows enable visual styles
+#pragma comment(linker,"\"/manifestdependency:type='win32' \
+name='Microsoft.Windows.Common-Controls' version='6.0.0.0' \
+processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 
 // Include DirectX 12
 #include <dxgi1_6.h>
