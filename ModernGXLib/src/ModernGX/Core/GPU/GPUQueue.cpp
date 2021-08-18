@@ -64,15 +64,30 @@ void MGX::Core::GPU::CommandQueue::Wait(UINT64 value) noexcept {
     // Adjust fence value for default argument
     if (value == UINT64_MAX) value = m_fenceValue;
 
-    // Wait for
+    // Check if wait is required
+    if (m_ptrFence->GetCompletedValue() < value) {
+        // Check and ready event
+        if (m_waitEvent != INVALID_HANDLE_VALUE && ResetEvent(m_waitEvent)) {
+            // Signal event
+            if (SUCCEEDED(m_ptrFence->SetEventOnCompletion(value, m_waitEvent))) {
+                // Wait for event
+                if (WaitForSingleObject(m_waitEvent, INFINITE) == WAIT_OBJECT_0) {
+                    // Wait donw
+                    return;
+                }
+            }
+        }
+
+        // Naive waite
+        while (m_ptrFence->GetCompletedValue() < value);
+    }
 }
 
 void MGX::Core::GPU::CommandQueue::Flush(unsigned int count) noexcept {
-    // Signal queue
     for (unsigned int i = 0; i < count; i++) {
+        // Signal queue
         m_ptrBase->Signal(m_ptrFence, ++m_fenceValue);
+        // Wait
+        Wait();
     }
-
-    // Wait
-    Wait();
 }

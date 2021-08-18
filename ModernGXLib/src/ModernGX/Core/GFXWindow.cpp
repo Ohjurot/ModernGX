@@ -120,6 +120,9 @@ void MGX::Core::Window::ResizeNow() noexcept {
 
         // Resize swap chain
         m_ptrSwapChain->ResizeBuffers(GetBufferCount(), m_width, m_height, DXGI_FORMAT_UNKNOWN, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH);
+
+        // Resizing done
+        m_needsResize = false;
     }
 
     // Get buffers
@@ -159,15 +162,16 @@ bool MGX::Core::Window::handleWindowMessage(LRESULT* ptrLRESULT, HWND hwnd, UINT
     switch (msg) {
         // Size message
         case WM_SIZE: {
-            // Get client rect
-            RECT cr;
-            if (GetClientRect(this->operator HWND(), &cr)) {
-                // Check resize
-                if (cr.right - cr.left != m_width || cr.bottom - cr.top != m_height) {
-                    m_needsResize = true;
+            if (wParam == SIZE_RESTORED || wParam == SIZE_MAXIMIZED) {
+                // Get client rect
+                RECT cr;
+                if (GetClientRect(this->operator HWND(), &cr)) {
+                    // Check resize
+                    if (cr.right - cr.left != m_width || cr.bottom - cr.top != m_height) {
+                        m_needsResize = true;
+                    }
                 }
             }
-
             break;
         }
     }

@@ -26,18 +26,19 @@ INT wWinMain_safe(HINSTANCE hInstance, PWSTR cmdArgs, INT cmdShow) {
     while (wnd.ProcessWindowEvents()) {
         // Window resizing
         if (wnd.NeedsResizing()) {
-            queue.Flush(2);
+            queue.Flush(wnd.GetBufferCount());
             wnd.ResizeNow();
         }
 
         // TODO: Render loop
+        queue.Flush(1);
         
         // Present frame
         wnd.Present();
     }
 
     // Flush Queue
-    queue.Flush(2);
+    queue.Flush(wnd.GetBufferCount());
     return 0;
 }
 
