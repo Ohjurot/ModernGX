@@ -3,6 +3,8 @@
 #include <ModernGX/Core/GFXWindow.h>
 #include <ModernGX/Core/GPU/GPUDevice.h>
 #include <ModernGX/Core/GPU/GPUQueue.h>
+#include <ModernGX/Core/GPU/GPUCommandList.h>
+
 
 using namespace MGX;
 
@@ -18,7 +20,8 @@ INT wWinMain_safe(HINSTANCE hInstance, PWSTR cmdArgs, INT cmdShow) {
     // Device
     Core::GPU::Device device;
     Core::GPU::CommandQueue queue(device);
-    
+    Core::GPU::CommandList list(device);
+
     // Create window
     Core::Window wnd(L"My Window", queue);
 

@@ -35,7 +35,7 @@ MGX::Core::GPU::Device::~Device() noexcept {
     #ifdef _DEBUG
     if (ref == 1) {
         // RLDO on debug
-        OutputDebugString(L"DirectX 12 is reporting live device object. One device ist totaly normal (this is the device producing that output)\n");
+        OutputDebugString(L"DirectX 12 is reporting live device objects. One device ist totaly normal (this is the device producing that output)\n");
         m_ptrDebugDevice->ReportLiveDeviceObjects(D3D12_RLDO_DETAIL | D3D12_RLDO_IGNORE_INTERNAL);
     }
 
