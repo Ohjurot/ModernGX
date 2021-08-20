@@ -13,9 +13,12 @@ namespace MGX {
             class CommandList : public Foundation::COMGetable<ID3D12GraphicsCommandList> {
                 public:
                     // Construct
-                    CommandList() = delete;
+                    CommandList() = default;
                     CommandList(const CommandList&) = delete;
                     CommandList(ID3D12Device* ptrDevice, D3D12_COMMAND_LIST_TYPE type = D3D12_COMMAND_LIST_TYPE_DIRECT);
+
+                    // Assign move
+                    CommandList& operator=(CommandList&& other) noexcept;
 
                     // Close and reset command list
                     void Close() noexcept;
