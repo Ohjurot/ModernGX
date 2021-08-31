@@ -25,6 +25,14 @@ namespace MGX {
                     void Reset() noexcept;
                     bool IsOpen() noexcept;
 
+                    // Name command list
+                    HRESULT name(LPCWSTR name) override {
+                        HRESULT hr;
+                        if (FAILED(hr = m_ptrBase.name(name))) return hr;
+                        if (FAILED(hr = m_ptrAllocator.name(name))) return hr;
+                        return hr;
+                    }
+
                 private:
                     // Command allocator
                     ComPointer<ID3D12CommandAllocator> m_ptrAllocator;

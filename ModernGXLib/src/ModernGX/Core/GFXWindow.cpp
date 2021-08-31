@@ -3,8 +3,9 @@
 
 EasyHWND::WindowClass MGX::Core::Window::s_wndCls(L"MGX_WND_CLS", CS_OWNDC);
 
-MGX::Core::Window::Window(LPCWSTR title, ID3D12CommandQueue* ptrCommandQueue, bool borderless) :
-    EasyHWND::Window(s_wndCls, title, 0, 0, 1920, 1080, borderless ? WS_POPUP : WS_OVERLAPPEDWINDOW)
+MGX::Core::Window::Window(LPCWSTR title, ID3D12CommandQueue* ptrCommandQueue, bool borderless, bool trippleBuffering) :
+    EasyHWND::Window(s_wndCls, title, 0, 0, 1920, 1080, borderless ? WS_POPUP : WS_OVERLAPPEDWINDOW),
+    m_bufferCount(trippleBuffering ? 3 : 2)
 {
     // Get cursor screen
     POINT cursorPos = { 0,0 };
@@ -147,6 +148,31 @@ void MGX::Core::Window::__getBuffers() {
     for (unsigned int i = 0; i < GetBufferCount(); i++) {
         // Get buffer
         m_ptrSwapChain->GetBuffer(i, IID_PPV_ARGS(&m_ptrBuffers[i]));
+
+        // Naming
+        #ifndef MGX_DISABLE_INTERNAL_D3D_NAMEING
+        // Get number as string
+        WCHAR count[2];
+        *count = 0x00;
+        _ultow_s<2>(i, count, 10);
+        
+        // Get window name
+        WCHAR wndTitle[512];
+        *wndTitle = 0x00;
+        GetWindowText(this->operator HWND(), wndTitle, 512);
+
+        // Combine string
+        WCHAR name[512];
+        *name = 0x00;
+        wcscpy_s<512>(name, L"Back Buffer #");
+        wcscat_s<512>(name, count);
+        wcscat_s<512>(name, L" (For window: \"");
+        wcscat_s<512>(name, wndTitle);
+        wcscat_s<512>(name, L"\")");
+
+        // Name object
+        m_ptrBuffers[i].name(name);
+        #endif
     }
 }
 

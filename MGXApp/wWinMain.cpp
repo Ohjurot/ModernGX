@@ -5,22 +5,21 @@
 #include <ModernGX/Core/GPU/GPUQueue.h>
 #include <ModernGX/Core/GPU/GPUCommandList.h>
 
+// Windows enable visual styles
+#pragma comment(linker,"\"/manifestdependency:type='win32' \
+name='Microsoft.Windows.Common-Controls' version='6.0.0.0' \
+processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 
 using namespace MGX;
 
 INT wWinMain_safe(HINSTANCE hInstance, PWSTR cmdArgs, INT cmdShow) {
-    // Enable debug layer
-    #ifdef _DEBUG
-    ComPointer<ID3D12Debug> dbg;
-    if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&dbg)))) {
-        dbg->EnableDebugLayer();
-    }
-    #endif
+    // Init MGX
+    MGX_INIT();
     
     // Device
-    Core::GPU::Device device;
-    Core::GPU::CommandQueue queue(device);
-    Core::GPU::CommandList list(device);
+    Core::GPU::Device device; device.name(L"Main device");
+    Core::GPU::CommandQueue queue(device); queue.name(L"Defaul direct queue");
+    Core::GPU::CommandList list(device); list.name(L"Main direct command list");
 
     // Create window
     Core::Window wnd(L"My Window", queue);

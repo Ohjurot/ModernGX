@@ -1,5 +1,7 @@
 #pragma once
 
+#include <type_traits>
+
 // Com pointer class
 template<typename CT>
 class ComPointer {
@@ -29,6 +31,12 @@ class ComPointer {
 		~ComPointer() {
 			// Clear pointer
 			clearPointer();
+		}
+
+		// Naming
+		template<typename T = CT, typename = std::enable_if_t<std::is_base_of_v<ID3D12Object, T>>>
+		HRESULT name(LPCWSTR name) {
+			return m_pointer ? m_pointer->SetName(name) : E_FAIL;
 		}
 
 		// Release the pointer

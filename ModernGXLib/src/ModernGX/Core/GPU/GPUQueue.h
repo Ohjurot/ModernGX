@@ -30,6 +30,14 @@ namespace MGX {
                     // Flush function
                     void Flush(unsigned int count) noexcept;
                     
+                    // Name queue
+                    HRESULT name(LPCWSTR name) override {
+                        HRESULT hr;
+                        if (FAILED(hr = m_ptrBase.name(name))) return hr;
+                        if (FAILED(hr = m_ptrFence.name(name))) return hr;
+                        return hr;
+                    }
+
                 private:
                     // Fence for command queue
                     ComPointer<ID3D12Fence> m_ptrFence;

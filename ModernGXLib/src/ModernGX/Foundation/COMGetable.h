@@ -22,6 +22,11 @@ namespace MGX {
                     return m_ptrBase != nullptr;
                 }
 
+                // Get pointer
+                CT* Ptr() {
+                    return m_ptrBase;
+                }
+
                 // Ge it Ass
                 template<typename T>
                 ComPointer<T> As() {
@@ -30,6 +35,11 @@ namespace MGX {
                         m_ptrBase.queryInterface(ptr);
                     }
                     return ptr;
+                }
+
+                // Naming the object
+                virtual HRESULT name(LPCWSTR name) {
+                    return m_ptrBase.name<CT>(name);
                 }
 
             protected:

@@ -31,6 +31,7 @@ namespace MGX {
                 private:
                     #ifdef _DEBUG
                     ComPointer<ID3D12DebugDevice> m_ptrDebugDevice;
+                    void __DebugInit();
                     #endif
 
                 private:

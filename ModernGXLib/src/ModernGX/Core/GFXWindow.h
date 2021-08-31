@@ -4,8 +4,6 @@
 #include <ModernGX/Foundation/HRException.h>
 #include <ModernGX/Util/EasyHWND.h>
 
-#define MGX_SWAP_CHAIN_BUFFER_COUNT 2
-
 namespace MGX {
     namespace Core {
         // Window class
@@ -14,7 +12,7 @@ namespace MGX {
                 // Construct
                 Window() = delete;
                 Window(const Window&) = delete;
-                Window(LPCWSTR title, ID3D12CommandQueue* ptrCommandQueue, bool borderless = false);
+                Window(LPCWSTR title, ID3D12CommandQueue* ptrCommandQueue, bool borderless = false, bool trippleBuffering = false);
 
                 // Destructor
                 ~Window();
@@ -32,8 +30,8 @@ namespace MGX {
                 // Buffers
                 unsigned int GetCurrentBufferIndex() noexcept;
                 ID3D12Resource* GetBuffer(unsigned int idx) noexcept;
-                static constexpr unsigned int GetBufferCount() noexcept {
-                    return MGX_SWAP_CHAIN_BUFFER_COUNT;
+                inline unsigned int GetBufferCount() const noexcept {
+                    return m_bufferCount;
                 }
 
             private:
@@ -53,8 +51,9 @@ namespace MGX {
                 ComPointer<IDXGISwapChain1> m_ptrSwapChain;
 
                 // Buffers
-                ComPointer<ID3D12Resource> m_ptrBuffers[MGX_SWAP_CHAIN_BUFFER_COUNT];
+                ComPointer<ID3D12Resource> m_ptrBuffers[3];
                 unsigned int m_bufferIndex = 0;
+                const unsigned int m_bufferCount;
 
                 // Size
                 UINT m_width = 0;

@@ -374,7 +374,7 @@ namespace EasyHWND {
 			/// <param name="ptrHeight">Pointer to height</param>
 			void adjustSizeForWindow(UINT* ptrWidth, UINT* ptrHeight) {
 				// Create window rect
-				RECT windowRect = {0, 0, *ptrWidth, *ptrHeight};
+				RECT windowRect = {0, 0, (LONG)*ptrWidth, (LONG)*ptrHeight};
 
 				// Adjust window rect
 				AdjustWindowRectEx(&windowRect, m_style, m_bHasMenue, m_styleEx);

@@ -7,7 +7,7 @@ MGX::Core::GPU::Device::Device() {
 
     // Get debug device
     #ifdef _DEBUG
-    m_ptrBase.queryInterface(m_ptrDebugDevice);
+    __DebugInit();
     #endif
 }
 
@@ -25,7 +25,7 @@ MGX::Core::GPU::Device::Device(LUID luid) {
 
     // Get debug device
     #ifdef _DEBUG
-    m_ptrBase.queryInterface(m_ptrDebugDevice);
+    __DebugInit();
     #endif 
 }
 
@@ -33,7 +33,7 @@ MGX::Core::GPU::Device::~Device() noexcept {
     // Check if this was the last object of this type (ref count == 1 because Debug Device and Device have same ref count)
     auto ref = m_ptrBase.release();
     #ifdef _DEBUG
-    if (ref == 1) {
+    if (ref == 1 && m_ptrDebugDevice) {
         // RLDO on debug
         OutputDebugString(L"DirectX 12 is reporting live device objects. One device ist totaly normal (this is the device producing that output)\n");
         m_ptrDebugDevice->ReportLiveDeviceObjects(D3D12_RLDO_DETAIL | D3D12_RLDO_IGNORE_INTERNAL);
@@ -59,3 +59,13 @@ DXGI_ADAPTER_DESC3 MGX::Core::GPU::Device::GetDescription() noexcept {
     // Return description
     return desc;
 }
+
+#ifdef _DEBUG
+void MGX::Core::GPU::Device::__DebugInit() {
+    // Create debug device and show error when failed
+    if (!m_ptrBase.queryInterface(m_ptrDebugDevice)) {
+        OutputDebugString(L"[MGX ERROR] Failed to create ID3D12DebugDevice. Are you linking with the correct lib? Are your correctly defining MGX_DEBUG? Are you calling MGX_INIT()?\n");
+    }
+}
+#endif
+
