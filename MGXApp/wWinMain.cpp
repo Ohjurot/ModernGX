@@ -18,7 +18,7 @@ INT wWinMain_safe(HINSTANCE hInstance, PWSTR cmdArgs, INT cmdShow) {
     
     // Device
     Core::GPU::Device device; device.name(L"Main device");
-    Core::GPU::CommandQueue queue(device); queue.name(L"Defaul direct queue");
+    Core::GPU::CommandQueue queue(device); queue.name(L"Default direct queue");
     Core::GPU::CommandList list(device); list.name(L"Main direct command list");
 
     // Create window
