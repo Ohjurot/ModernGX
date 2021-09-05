@@ -91,9 +91,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\ModernGX.h" />
+    <ClInclude Include="src\ModernGX\Core\Allocator\FastPoolAllocator.h" />
+    <ClInclude Include="src\ModernGX\Core\Allocator\IAllocator.h" />
     <ClInclude Include="src\ModernGX\Core\GFXWindow.h" />
     <ClInclude Include="src\ModernGX\Core\GPU\GPUCommandList.h" />
     <ClInclude Include="src\ModernGX\Core\GPU\GPUDevice.h" />
+    <ClInclude Include="src\ModernGX\Core\GPU\GPUHeap.h" />
     <ClInclude Include="src\ModernGX\Core\GPU\GPUQueue.h" />
     <ClInclude Include="src\ModernGX\Foundation\COMGetable.h" />
     <ClInclude Include="src\ModernGX\Foundation\HRException.h" />
@@ -108,6 +111,7 @@
     <ClCompile Include="src\ModernGX\Core\GFXWindow.cpp" />
     <ClCompile Include="src\ModernGX\Core\GPU\GPUCommandList.cpp" />
     <ClCompile Include="src\ModernGX\Core\GPU\GPUDevice.cpp" />
+    <ClCompile Include="src\ModernGX\Core\GPU\GPUHeap.cpp" />
     <ClCompile Include="src\ModernGX\Core\GPU\GPUQueue.cpp" />
     <ClCompile Include="src\ModernGX\Foundation\HRException.cpp" />
   </ItemGroup>

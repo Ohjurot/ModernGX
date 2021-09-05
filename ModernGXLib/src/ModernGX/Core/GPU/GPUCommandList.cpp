@@ -1,7 +1,8 @@
 #include "ModernGX.h"
 #include "GPUCommandList.h"
 
-MGX::Core::GPU::CommandList::CommandList(ID3D12Device* ptrDevice, D3D12_COMMAND_LIST_TYPE type) {
+MGX::Core::GPU::CommandList::CommandList(ID3D12Device* ptrDevice, D3D12_COMMAND_LIST_TYPE type) 
+{
     // Create command allocator
     MGX_EVALUATE_HRESULT("ID3D12Device->CreateCommandAllocator(...)", ptrDevice->CreateCommandAllocator(type, IID_PPV_ARGS(&m_ptrAllocator)));
 
@@ -9,7 +10,8 @@ MGX::Core::GPU::CommandList::CommandList(ID3D12Device* ptrDevice, D3D12_COMMAND_
     MGX_EVALUATE_HRESULT("ID3D12Device->CreateCommandList(...)", ptrDevice->CreateCommandList(NULL, type, m_ptrAllocator, nullptr, IID_PPV_ARGS(&m_ptrBase)));
 }
 
-MGX::Core::GPU::CommandList& MGX::Core::GPU::CommandList::operator=(CommandList&& other) noexcept {
+MGX::Core::GPU::CommandList& MGX::Core::GPU::CommandList::operator=(CommandList&& other) noexcept 
+{
     // Set this
     m_ptrBase = other.m_ptrBase;
     m_ptrAllocator = other.m_ptrAllocator;
@@ -23,8 +25,10 @@ MGX::Core::GPU::CommandList& MGX::Core::GPU::CommandList::operator=(CommandList&
     return *this;
 }
 
-void MGX::Core::GPU::CommandList::Close() noexcept {
-    if (m_bOpen) {
+void MGX::Core::GPU::CommandList::Close() noexcept 
+{
+    if (m_bOpen) 
+    {
         // Close command list
         m_ptrBase->Close();
 
@@ -33,8 +37,10 @@ void MGX::Core::GPU::CommandList::Close() noexcept {
     }
 }
 
-void MGX::Core::GPU::CommandList::Reset() noexcept {
-    if (!m_bOpen) {
+void MGX::Core::GPU::CommandList::Reset() noexcept 
+{
+    if (!m_bOpen) 
+    {
         // Reset
         m_ptrAllocator->Reset();
         m_ptrBase->Reset(m_ptrAllocator, nullptr);
@@ -45,6 +51,15 @@ void MGX::Core::GPU::CommandList::Reset() noexcept {
     }
 }
 
-bool MGX::Core::GPU::CommandList::IsOpen() noexcept {
+bool MGX::Core::GPU::CommandList::IsOpen() noexcept 
+{
     return m_bOpen;
+}
+
+HRESULT MGX::Core::GPU::CommandList::name(LPCWSTR name)
+{
+    HRESULT hr;
+    if (FAILED(hr = m_ptrBase.name(name))) return hr;
+    if (FAILED(hr = m_ptrAllocator.name(name))) return hr;
+    return hr;
 }

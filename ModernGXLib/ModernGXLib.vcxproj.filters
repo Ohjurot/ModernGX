@@ -42,6 +42,15 @@
     <ClInclude Include="src\ModernGX\Core\GPU\GPUCommandList.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\ModernGX\Core\GPU\GPUHeap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ModernGX\Core\Allocator\FastPoolAllocator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ModernGX\Core\Allocator\IAllocator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\ModernGX.cpp">
@@ -60,6 +69,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\ModernGX\Core\GPU\GPUCommandList.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ModernGX\Core\GPU\GPUHeap.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

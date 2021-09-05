@@ -1,7 +1,8 @@
 #include "ModernGX.h"
 #include "HRException.h"
 
-MGX::Foundation::HRException::HRException(const char* file, int line, const char* what, HRESULT result) {
+MGX::Foundation::HRException::HRException(const char* file, int line, const char* what, HRESULT result) 
+{
     // Get languare
     LCID languageId;
     GetLocaleInfoEx(L"en-US", LOCALE_RETURN_NUMBER | LOCALE_ILANGUAGE, (LPWSTR)&languageId, sizeof(LCID));
@@ -19,7 +20,8 @@ MGX::Foundation::HRException::HRException(const char* file, int line, const char
     );
 
     // Fallback load system default
-    if (!res) {
+    if (!res) 
+    {
         FormatMessageA(
             FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
             NULL, result, NULL,
@@ -29,7 +31,8 @@ MGX::Foundation::HRException::HRException(const char* file, int line, const char
 
     // Clear '\r' from buffer
     char* rChar = strchr(buffer, '\r');
-    if (rChar) {
+    if (rChar) 
+    {
         *rChar = 0x00;
     }
 
@@ -45,10 +48,12 @@ MGX::Foundation::HRException::HRException(const char* file, int line, const char
     m_text = ss.str();
 }
 
-const char* MGX::Foundation::HRException::what() const noexcept {
+const char* MGX::Foundation::HRException::what() const noexcept 
+{
     return m_text.c_str();
 }
 
-void MGX::Foundation::HRException::show() const noexcept {
+void MGX::Foundation::HRException::show() const noexcept 
+{
     MessageBoxA(NULL, m_text.c_str(), "HRESULT Failed", MB_OK | MB_ICONEXCLAMATION);
 }

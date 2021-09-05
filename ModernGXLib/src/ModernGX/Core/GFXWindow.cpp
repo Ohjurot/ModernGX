@@ -20,12 +20,14 @@ MGX::Core::Window::Window(LPCWSTR title, ID3D12CommandQueue* ptrCommandQueue, bo
     // Get monitor info
     MONITORINFO info;
     info.cbSize = sizeof(MONITORINFO);
-    if (GetMonitorInfoW(monitor, &info)) {
+    if (GetMonitorInfoW(monitor, &info)) 
+    {
         windowRect = borderless ? info.rcMonitor : info.rcWork;
     }
 
     // Adjust rect if required
-    if (!borderless) {
+    if (!borderless) 
+    {
         // Half size
         m_width = (windowRect.right - windowRect.left) / 2;
         m_height = (windowRect.bottom - windowRect.top) / 2;
@@ -37,7 +39,8 @@ MGX::Core::Window::Window(LPCWSTR title, ID3D12CommandQueue* ptrCommandQueue, bo
         // Adjust rect
         AdjustWindowRectEx(&windowRect, WS_OVERLAPPEDWINDOW, FALSE, NULL);
     }
-    else {
+    else 
+    {
         // Set sizes
         m_width = (windowRect.right - windowRect.left);
         m_height = (windowRect.bottom - windowRect.top);
@@ -86,16 +89,19 @@ MGX::Core::Window::Window(LPCWSTR title, ID3D12CommandQueue* ptrCommandQueue, bo
     __getBuffers();
 }
 
-MGX::Core::Window::~Window() {
+MGX::Core::Window::~Window() 
+{
     // Release buffers bevore swap chain
     __releaseBuffers();
     m_ptrSwapChain.release();
 }
 
-bool MGX::Core::Window::ProcessWindowEvents() noexcept {
+bool MGX::Core::Window::ProcessWindowEvents() noexcept 
+{
     // Message loop
     MSG msg;
-    while (PeekMessage(&msg, this->operator HWND(), 0, 0, PM_REMOVE)) {
+    while (PeekMessage(&msg, this->operator HWND(), 0, 0, PM_REMOVE)) 
+    {
         TranslateMessage(&msg);
         DispatchMessage(&msg);
     }
@@ -104,17 +110,20 @@ bool MGX::Core::Window::ProcessWindowEvents() noexcept {
     return !this->checkWindowCloseFlag(false);
 }
 
-bool MGX::Core::Window::NeedsResizing() noexcept {
+bool MGX::Core::Window::NeedsResizing() noexcept 
+{
     return m_needsResize;
 }
 
-void MGX::Core::Window::ResizeNow() noexcept {
+void MGX::Core::Window::ResizeNow() noexcept 
+{
     // Drop buffer
     __releaseBuffers();
 
     // Get client rect
     RECT cr;
-    if (GetClientRect(this->operator HWND(), &cr)) {
+    if (GetClientRect(this->operator HWND(), &cr)) 
+    {
         // Update dimentsions
         m_width = cr.right - cr.left;
         m_height = cr.bottom - cr.top;
@@ -130,22 +139,27 @@ void MGX::Core::Window::ResizeNow() noexcept {
     __getBuffers();
 }
 
-void MGX::Core::Window::Present(bool vsync) noexcept {
+void MGX::Core::Window::Present(bool vsync) noexcept 
+{
     m_ptrSwapChain->Present(vsync ? 1 : 0, NULL);
     m_bufferIndex = (m_bufferIndex + 1) % GetBufferCount();
 }
 
-unsigned int MGX::Core::Window::GetCurrentBufferIndex() noexcept {
+unsigned int MGX::Core::Window::GetCurrentBufferIndex() noexcept 
+{
     return m_bufferIndex;
 }
 
-ID3D12Resource* MGX::Core::Window::GetBuffer(unsigned int idx) noexcept {
+ID3D12Resource* MGX::Core::Window::GetBuffer(unsigned int idx) noexcept 
+{
     return idx < GetBufferCount() ? m_ptrBuffers[idx] : nullptr;
 }
 
-void MGX::Core::Window::__getBuffers() {
+void MGX::Core::Window::__getBuffers() 
+{
     // Get each buffer
-    for (unsigned int i = 0; i < GetBufferCount(); i++) {
+    for (unsigned int i = 0; i < GetBufferCount(); i++) 
+    {
         // Get buffer
         m_ptrSwapChain->GetBuffer(i, IID_PPV_ARGS(&m_ptrBuffers[i]));
 
@@ -176,24 +190,32 @@ void MGX::Core::Window::__getBuffers() {
     }
 }
 
-void MGX::Core::Window::__releaseBuffers() noexcept {
+void MGX::Core::Window::__releaseBuffers() noexcept 
+{
     // Release buffers
-    for (unsigned int i = 0; i < GetBufferCount(); i++) {
+    for (unsigned int i = 0; i < GetBufferCount(); i++) 
+    {
         m_ptrBuffers[i].release();
     }
 }
 
-bool MGX::Core::Window::handleWindowMessage(LRESULT* ptrLRESULT, HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) {
+bool MGX::Core::Window::handleWindowMessage(LRESULT* ptrLRESULT, HWND hwnd, UINT msg, WPARAM wParam, LPARAM lParam) 
+{
     // Switch on messages
-    switch (msg) {
+    switch (msg) 
+    {
         // Size message
-        case WM_SIZE: {
-            if (wParam == SIZE_RESTORED || wParam == SIZE_MAXIMIZED) {
+        case WM_SIZE: 
+        {
+            if (wParam == SIZE_RESTORED || wParam == SIZE_MAXIMIZED) 
+            {
                 // Get client rect
                 RECT cr;
-                if (GetClientRect(this->operator HWND(), &cr)) {
+                if (GetClientRect(this->operator HWND(), &cr)) 
+                {
                     // Check resize
-                    if (cr.right - cr.left != m_width || cr.bottom - cr.top != m_height) {
+                    if (cr.right - cr.left != m_width || cr.bottom - cr.top != m_height) 
+                    {
                         m_needsResize = true;
                     }
                 }

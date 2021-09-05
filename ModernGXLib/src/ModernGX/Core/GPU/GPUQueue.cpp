@@ -1,7 +1,8 @@
 #include "ModernGX.h"
 #include "GPUQueue.h"
 
-MGX::Core::GPU::CommandQueue::CommandQueue(ID3D12Device* ptrDevice, D3D12_COMMAND_LIST_TYPE type, D3D12_COMMAND_QUEUE_PRIORITY prio) {
+MGX::Core::GPU::CommandQueue::CommandQueue(ID3D12Device* ptrDevice, D3D12_COMMAND_LIST_TYPE type, D3D12_COMMAND_QUEUE_PRIORITY prio) 
+{
     // Describe command queue
     D3D12_COMMAND_QUEUE_DESC qd = {};
     qd.Type = type;
@@ -19,7 +20,8 @@ MGX::Core::GPU::CommandQueue::CommandQueue(ID3D12Device* ptrDevice, D3D12_COMMAN
     m_waitEvent = CreateEvent(NULL, TRUE, FALSE, NULL);
 }
 
-MGX::Core::GPU::CommandQueue::~CommandQueue() {
+MGX::Core::GPU::CommandQueue::~CommandQueue() 
+{
     // Wait if valid
     if (m_ptrBase) Wait();
     
@@ -27,7 +29,8 @@ MGX::Core::GPU::CommandQueue::~CommandQueue() {
     if (m_waitEvent != INVALID_HANDLE_VALUE) CloseHandle(m_waitEvent);
 }
 
-MGX::Core::GPU::CommandQueue& MGX::Core::GPU::CommandQueue::operator=(CommandQueue&& other) noexcept {
+MGX::Core::GPU::CommandQueue& MGX::Core::GPU::CommandQueue::operator=(CommandQueue&& other) noexcept 
+{
     // Release this
     this->~CommandQueue();
 
@@ -48,7 +51,8 @@ MGX::Core::GPU::CommandQueue& MGX::Core::GPU::CommandQueue::operator=(CommandQue
     return *this;
 }
 
-UINT64 MGX::Core::GPU::CommandQueue::Execute(ID3D12CommandList* ptrCommandList) noexcept {
+UINT64 MGX::Core::GPU::CommandQueue::Execute(ID3D12CommandList* ptrCommandList) noexcept 
+{
     // Pack in array
     ID3D12CommandList* arr[] = { ptrCommandList };
     
@@ -60,19 +64,24 @@ UINT64 MGX::Core::GPU::CommandQueue::Execute(ID3D12CommandList* ptrCommandList) 
     return m_fenceValue;
 }
 
-void MGX::Core::GPU::CommandQueue::Wait(UINT64 value) noexcept {
+void MGX::Core::GPU::CommandQueue::Wait(UINT64 value) noexcept 
+{
     // Adjust fence value for default argument
     if (value == UINT64_MAX) value = m_fenceValue;
 
     // Check if wait is required
-    if (m_ptrFence->GetCompletedValue() < value) {
+    if (m_ptrFence->GetCompletedValue() < value) 
+    {
         // Check and ready event
-        if (m_waitEvent != INVALID_HANDLE_VALUE && ResetEvent(m_waitEvent)) {
+        if (m_waitEvent != INVALID_HANDLE_VALUE && ResetEvent(m_waitEvent)) 
+        {
             // Signal event
-            if (SUCCEEDED(m_ptrFence->SetEventOnCompletion(value, m_waitEvent))) {
+            if (SUCCEEDED(m_ptrFence->SetEventOnCompletion(value, m_waitEvent))) 
+            {
                 // Wait for event
-                if (WaitForSingleObject(m_waitEvent, INFINITE) == WAIT_OBJECT_0) {
-                    // Wait donw
+                if (WaitForSingleObject(m_waitEvent, INFINITE) == WAIT_OBJECT_0) 
+                {
+                    // Wait done
                     return;
                 }
             }
@@ -83,11 +92,21 @@ void MGX::Core::GPU::CommandQueue::Wait(UINT64 value) noexcept {
     }
 }
 
-void MGX::Core::GPU::CommandQueue::Flush(unsigned int count) noexcept {
-    for (unsigned int i = 0; i < count; i++) {
+void MGX::Core::GPU::CommandQueue::Flush(unsigned int count) noexcept 
+{
+    for (unsigned int i = 0; i < count; i++) 
+    {
         // Signal queue
         m_ptrBase->Signal(m_ptrFence, ++m_fenceValue);
         // Wait
         Wait();
     }
+}
+
+HRESULT MGX::Core::GPU::CommandQueue::name(LPCWSTR name)
+{
+    HRESULT hr;
+    if (FAILED(hr = m_ptrBase.name(name))) return hr;
+    if (FAILED(hr = m_ptrFence.name(name))) return hr;
+    return hr;
 }
