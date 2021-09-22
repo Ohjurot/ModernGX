@@ -5,6 +5,9 @@
 #include <ModernGX/Core/GPU/GPUQueue.h>
 #include <ModernGX/Core/GPU/GPUCommandList.h>
 
+#include <ModernGX/Util/Memory.h>
+#include <ModernGX/Core/Allocator/StackMemoryAllocator.h>
+
 // Windows enable visual styles
 #pragma comment(linker,"\"/manifestdependency:type='win32' \
 name='Microsoft.Windows.Common-Controls' version='6.0.0.0' \
@@ -12,9 +15,14 @@ processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 
 using namespace MGX;
 
-INT wWinMain_safe(HINSTANCE hInstance, PWSTR cmdArgs, INT cmdShow) {
+INT wWinMain_safe(HINSTANCE hInstance, PWSTR cmdArgs, INT cmdShow) 
+{
     // Init MGX
     MGX_INIT();
+
+    // TEST
+    
+    // END 
     
     // Device
     Core::GPU::Device device; device.name(L"Main device");
