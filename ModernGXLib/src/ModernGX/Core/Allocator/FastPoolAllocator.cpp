@@ -42,6 +42,11 @@ void* MGX::Core::Allocator::FastPoolAllocator::Allocate(size_t size) noexcept
     {
         // Set output pointer
         returnPointer = (void*)((UINT64)m_baseAddress + (m_slotSize * slot));
+
+        // Debug memset
+        #ifdef _DEBUG
+        memset(returnPointer, 0xEA, m_slotSize);
+        #endif
     }
 
     return returnPointer;

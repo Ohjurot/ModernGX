@@ -61,7 +61,7 @@ void MGX::Core::Allocator::StackMemoryAllocator::Reset() noexcept
 
 void* MGX::Core::Allocator::StackMemoryAllocator::Allocate(size_t size) noexcept
 {
-    void* mem = nullptr;
+    void* ptrMem = nullptr;
 
     // Compute number of slots required
     UINT32 slotCount = (UINT32)((size + m_slotSize - 1) / m_slotSize);
@@ -70,10 +70,15 @@ void* MGX::Core::Allocator::StackMemoryAllocator::Allocate(size_t size) noexcept
     UINT32 slotIdx = m_ac.SlotAlloc(slotCount);
     if (slotIdx != UINT32_MAX)
     {
-        mem = (void*)(((UINT64)m_ptrMemory) + slotIdx * m_slotSize);
+        ptrMem = (void*)(((UINT64)m_ptrMemory) + slotIdx * m_slotSize);
+
+        // Debug memset
+        #ifdef _DEBUG
+        memset(ptrMem, 0xEA, size);
+        #endif
     }
 
-    return mem;
+    return ptrMem;
 }
 
 void MGX::Core::Allocator::StackMemoryAllocator::Free(void* memory) noexcept

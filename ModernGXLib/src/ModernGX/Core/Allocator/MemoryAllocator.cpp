@@ -61,6 +61,11 @@ void* MGX::Core::Allocator::MemoryAllocator::Allocate(size_t size) noexcept
         // Set pointer
         ptrMem = (void*)( ((UINT64)m_ptrMemory) + m_slotSize * slotOffset );
 
+        // Debug memset
+        #ifdef _DEBUG
+        memset(ptrMem, 0xEA, (UINT64)m_slotSize * slotCount);
+        #endif
+
         // Increment usage
         m_allocatorUsage += (UINT64)m_slotSize * slotCount;
     }
