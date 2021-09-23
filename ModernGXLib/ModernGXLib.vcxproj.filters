@@ -78,6 +78,9 @@
     <ClInclude Include="src\ModernGX\Util\Memory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\ModernGX\Core\Allocator\MemoryAllocator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\ModernGX.cpp">
@@ -123,6 +126,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\ModernGX\Core\Allocator\StackMemoryAllocator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ModernGX\Core\Allocator\MemoryAllocator.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

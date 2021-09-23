@@ -95,6 +95,7 @@
     <ClInclude Include="src\ModernGX\Core\Allocator\FastPoolAllocator.h" />
     <ClInclude Include="src\ModernGX\Core\Allocator\IAllocator.h" />
     <ClInclude Include="src\ModernGX\Core\Allocator\ListMemoryAccelerator.h" />
+    <ClInclude Include="src\ModernGX\Core\Allocator\MemoryAllocator.h" />
     <ClInclude Include="src\ModernGX\Core\Allocator\StackMemoryAccelerator.h" />
     <ClInclude Include="src\ModernGX\Core\Allocator\StackMemoryAllocator.h" />
     <ClInclude Include="src\ModernGX\Core\Concurrent\GuardedObject.h" />
@@ -121,6 +122,7 @@
     <ClCompile Include="src\ModernGX\Core\Allocator\FastPoolAllocator.cpp" />
     <ClCompile Include="src\ModernGX\Core\Allocator\IAllocator.cpp" />
     <ClCompile Include="src\ModernGX\Core\Allocator\ListMemoryAccelerator.cpp" />
+    <ClCompile Include="src\ModernGX\Core\Allocator\MemoryAllocator.cpp" />
     <ClCompile Include="src\ModernGX\Core\Allocator\StackMemoryAccelerator.cpp" />
     <ClCompile Include="src\ModernGX\Core\Allocator\StackMemoryAllocator.cpp" />
     <ClCompile Include="src\ModernGX\Core\Concurrent\LockGuard.cpp" />

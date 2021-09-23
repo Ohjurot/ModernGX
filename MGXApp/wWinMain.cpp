@@ -6,7 +6,7 @@
 #include <ModernGX/Core/GPU/GPUCommandList.h>
 
 #include <ModernGX/Util/Memory.h>
-#include <ModernGX/Core/Allocator/StackMemoryAllocator.h>
+#include <ModernGX/Core/Allocator/MemoryAllocator.h>
 
 // Windows enable visual styles
 #pragma comment(linker,"\"/manifestdependency:type='win32' \
@@ -21,7 +21,7 @@ INT wWinMain_safe(HINSTANCE hInstance, PWSTR cmdArgs, INT cmdShow)
     MGX_INIT();
 
     // TEST
-    
+
     // END 
     
     // Device

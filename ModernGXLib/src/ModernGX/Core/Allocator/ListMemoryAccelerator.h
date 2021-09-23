@@ -12,7 +12,7 @@ namespace MGX::Core::Allocator
             // Represents a slot in the list
             struct LIST_ALLOCATION_SLOT
             {
-                UINT64 size = 0;
+                UINT32 size = 0;
                 UINT32 nextSlot = UINT32_MAX;
                 BOOL used = FALSE;
             };
@@ -28,6 +28,11 @@ namespace MGX::Core::Allocator
 
             // Move assign
             ListMemoryAccelerator& operator=(ListMemoryAccelerator&& other) noexcept;
+
+            // Allocation functions
+            UINT32 SlotAlloc(UINT32 count = 1) noexcept;
+            // Returns allocation size
+            UINT32 SlotFree(UINT32 slot) noexcept;
 
         private:
             // Base allocator
