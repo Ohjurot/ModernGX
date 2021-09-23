@@ -29,6 +29,7 @@ namespace MGX::Core::Allocator
 
             // Allocator interface
             void* Allocate(size_t size) noexcept;
+            // Asserts that memory is free in reverse order than allocation (STACK)
             void Free(void* memory) noexcept;
 
             // Monitor interface

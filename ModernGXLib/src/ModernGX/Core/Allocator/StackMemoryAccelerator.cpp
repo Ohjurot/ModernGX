@@ -43,6 +43,14 @@ UINT32 MGX::Core::Allocator::StackMemoryAccelerator::SlotAlloc(UINT32 size) noex
     return slot;
 }
 
+void MGX::Core::Allocator::StackMemoryAccelerator::Back(UINT32 idx) noexcept
+{
+    if (idx <= m_head)
+    {
+        m_head = idx;
+    }
+}
+
 void MGX::Core::Allocator::StackMemoryAccelerator::Reset() noexcept
 {
     m_head = 0;

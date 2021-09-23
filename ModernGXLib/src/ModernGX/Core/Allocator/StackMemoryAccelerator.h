@@ -26,8 +26,11 @@ namespace MGX::Core::Allocator
             // Bool check valid
             operator bool() const noexcept;
 
-            // Assign
+            // Allocate slots
             UINT32 SlotAlloc(UINT32 size = 1) noexcept;
+            // Go back to idx
+            void Back(UINT32 idx) noexcept;
+            
             // Reset
             void Reset() noexcept;
 
