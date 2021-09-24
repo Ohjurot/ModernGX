@@ -25,24 +25,23 @@ MGX::Core::Allocator::MemoryAllocator::~MemoryAllocator()
 
 MGX::Core::Allocator::MemoryAllocator& MGX::Core::Allocator::MemoryAllocator::operator=(MemoryAllocator&& other) noexcept
 {
-    // Only if allocator is invalid
-    if (!m_ptrMemory)
-    {
-        // Move
-        m_ac = std::move(other.m_ac);
+    // Destruct this
+    this->~MemoryAllocator();
 
-        // Copy
-        m_ptrBaseAllocator = other.m_ptrBaseAllocator;
-        m_ptrMemory = other.m_ptrMemory;
-        m_slotSize = other.m_slotSize;
-        m_slotCount = other.m_slotCount;
-        m_allocatorUsage = other.m_allocatorUsage;
+    // Move
+    m_ac = std::move(other.m_ac);
 
-        // Clear other
-        other.m_ptrMemory = nullptr;
-        other.m_slotCount = 0;
-        other.m_allocatorUsage = 0;
-    }
+    // Copy
+    m_ptrBaseAllocator = other.m_ptrBaseAllocator;
+    m_ptrMemory = other.m_ptrMemory;
+    m_slotSize = other.m_slotSize;
+    m_slotCount = other.m_slotCount;
+    m_allocatorUsage = other.m_allocatorUsage;
+
+    // Clear other
+    other.m_ptrMemory = nullptr;
+    other.m_slotCount = 0;
+    other.m_allocatorUsage = 0;
 
     return *this;
 }

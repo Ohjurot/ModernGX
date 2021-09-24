@@ -26,6 +26,9 @@ namespace MGX::Core::Allocator
             // Destruct
             ~ListMemoryAccelerator();
 
+            // Copy
+            ListMemoryAccelerator& operator=(const ListMemoryAccelerator&) = delete;
+
             // Move assign
             ListMemoryAccelerator& operator=(ListMemoryAccelerator&& other) noexcept;
 

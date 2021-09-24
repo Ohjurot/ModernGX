@@ -25,6 +25,9 @@ namespace MGX::Core::Allocator
             // Destruct
             ~FastPoolAccelerator();
 
+            // Copy
+            FastPoolAccelerator& operator=(const FastPoolAccelerator&) = delete;
+
             // Move assign
             FastPoolAccelerator& operator=(FastPoolAccelerator&& other) noexcept;
 

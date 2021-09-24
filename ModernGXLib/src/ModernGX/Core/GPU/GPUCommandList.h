@@ -16,6 +16,9 @@ namespace MGX::Core::GPU {
             CommandList(const CommandList&) = delete;
             CommandList(ID3D12Device* ptrDevice, D3D12_COMMAND_LIST_TYPE type = D3D12_COMMAND_LIST_TYPE_DIRECT);
 
+            // Copy
+            CommandList& operator=(const CommandList&) = delete;
+
             // Assign move
             CommandList& operator=(CommandList&& other) noexcept;
 

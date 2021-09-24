@@ -31,22 +31,21 @@ MGX::Core::Allocator::ListMemoryAccelerator::~ListMemoryAccelerator()
 
 MGX::Core::Allocator::ListMemoryAccelerator& MGX::Core::Allocator::ListMemoryAccelerator::operator=(ListMemoryAccelerator&& other) noexcept
 {
-    // Only if this is not valid
-    if (!m_ptrListElements)
-    {
-        // Parent move
-        m_listAllocator = std::move(other.m_listAllocator);
+    // Destruct this
+    this->~ListMemoryAccelerator();
+
+    // Parent move
+    m_listAllocator = std::move(other.m_listAllocator);
         
-        // Copy
-        m_ptrBaseAllocator = other.m_ptrBaseAllocator;
-        m_ptrListElements = other.m_ptrListElements;
-        m_listHead = other.m_listHead;
+    // Copy
+    m_ptrBaseAllocator = other.m_ptrBaseAllocator;
+    m_ptrListElements = other.m_ptrListElements;
+    m_listHead = other.m_listHead;
 
-        // Clear other
-        other.m_ptrListElements = nullptr;
-        other.m_listHead = UINT32_MAX;
-    }
-
+    // Clear other
+    other.m_ptrListElements = nullptr;
+    other.m_listHead = UINT32_MAX;
+    
     return *this;
 }
 

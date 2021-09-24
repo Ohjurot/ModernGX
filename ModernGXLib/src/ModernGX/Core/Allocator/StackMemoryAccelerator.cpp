@@ -9,17 +9,16 @@ MGX::Core::Allocator::StackMemoryAccelerator::StackMemoryAccelerator(UINT32 size
 
 MGX::Core::Allocator::StackMemoryAccelerator& MGX::Core::Allocator::StackMemoryAccelerator::operator=(StackMemoryAccelerator&& other) noexcept
 {
-    // Only if not valid
-    if (!m_count)
-    {
-        // Copy
-        m_count = other.m_count;
-        m_head = other.m_head;
+    // Destruct this
+    this->~StackMemoryAccelerator();
 
-        // Invalidate
-        other.m_count = 0;
-        other.m_head = 0;
-    }
+    // Copy
+    m_count = other.m_count;
+    m_head = other.m_head;
+
+    // Invalidate
+    other.m_count = 0;
+    other.m_head = 0;
 
     return *this;
 }

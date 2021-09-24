@@ -37,17 +37,16 @@ MGX::Core::Allocator::FastPoolAccelerator::~FastPoolAccelerator()
 
 MGX::Core::Allocator::FastPoolAccelerator& MGX::Core::Allocator::FastPoolAccelerator::operator=(FastPoolAccelerator&& other) noexcept
 {
-    // Shall only work on invalid object
-    if (!m_slotCount)
-    {
-        // Memcpy to this
-        memcpy(this, &other, sizeof(FastPoolAccelerator));
+    // Call destruct
+    this->~FastPoolAccelerator();
 
-        // unset others pointers (destruction of other must not free memory)
-        other.m_ptrSlots = nullptr;
-        // unset others slot count (make allocator not usable)
-        other.m_slotCount = 0;
-    }
+    // Memcpy to this
+    memcpy(this, &other, sizeof(FastPoolAccelerator));
+
+    // unset others pointers (destruction of other must not free memory)
+    other.m_ptrSlots = nullptr;
+    // unset others slot count (make allocator not usable)
+    other.m_slotCount = 0;
 
     // Return
     return *this;

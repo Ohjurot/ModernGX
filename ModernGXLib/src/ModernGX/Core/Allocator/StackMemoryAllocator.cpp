@@ -31,23 +31,23 @@ MGX::Core::Allocator::StackMemoryAllocator::~StackMemoryAllocator()
 
 MGX::Core::Allocator::StackMemoryAllocator& MGX::Core::Allocator::StackMemoryAllocator::operator=(StackMemoryAllocator&& other) noexcept
 {
-    if (!m_ptrMemory)
-    {
-        // Move other
-        m_ac = std::move(other.m_ac);
+    // Call destruct
+    this->~StackMemoryAllocator();
 
-        // Copy other
-        m_ptrBaseAllocator = other.m_ptrBaseAllocator;
-        m_ptrMemory = other.m_ptrMemory;
-        m_slotSize = other.m_slotSize;
-        m_slotCount = other.m_slotCount;
-        m_usage = other.m_usage;
+    // Move other
+    m_ac = std::move(other.m_ac);
 
-        // Invalidate other
-        other.m_ptrMemory = nullptr;
-        other.m_slotCount = 0;
-        other.m_usage = 0;
-    }
+    // Copy other
+    m_ptrBaseAllocator = other.m_ptrBaseAllocator;
+    m_ptrMemory = other.m_ptrMemory;
+    m_slotSize = other.m_slotSize;
+    m_slotCount = other.m_slotCount;
+    m_usage = other.m_usage;
+
+    // Invalidate other
+    other.m_ptrMemory = nullptr;
+    other.m_slotCount = 0;
+    other.m_usage = 0;
 
     return *this;
 }

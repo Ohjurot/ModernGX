@@ -20,7 +20,10 @@ namespace MGX::Core::GPU
             // Destruct
             ~CommandQueue();
 
-            // Operators
+            // Copy
+            CommandQueue& operator=(const CommandQueue&) = delete;
+
+            // Move
             CommandQueue& operator=(CommandQueue&& other) noexcept;
 
             // Execute function
