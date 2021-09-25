@@ -67,6 +67,17 @@ DXGI_ADAPTER_DESC3 MGX::Core::GPU::Device::GetDescription() noexcept
     return desc;
 }
 
+MGX::Core::GPU::HeapAllocationCookie MGX::Core::GPU::Device::GetAllocationInfo(const D3D12_RESOURCE_DESC* ptrDesc) noexcept
+{
+    HeapAllocationCookie info = {};
+    
+    // Query and copy
+    D3D12_RESOURCE_ALLOCATION_INFO d3dInfo = m_ptrBase->GetResourceAllocationInfo(NULL, 1, ptrDesc);
+    info.size = d3dInfo.SizeInBytes;
+
+    return info;
+}
+
 #ifdef _DEBUG
 void MGX::Core::GPU::Device::__DebugInit() 
 {

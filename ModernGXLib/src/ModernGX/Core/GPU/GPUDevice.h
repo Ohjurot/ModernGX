@@ -3,6 +3,7 @@
 #include <ModernGX.h>
 #include <ModernGX/Foundation/COMGetable.h>
 #include <ModernGX/Foundation/HRException.h>
+#include <ModernGX/Core/GPU/GPUHeapAllocationCookie.h>
 
 #define __MGX_DEVICE_FEATURE_HELPER(data, val) template<> static constexpr D3D12_FEATURE __FeatureHelper<data>() { return val; }
 
@@ -21,6 +22,9 @@ namespace MGX::Core::GPU
 
             // Get device description
             DXGI_ADAPTER_DESC3 GetDescription() noexcept;
+
+            // Get allocation info for resource
+            HeapAllocationCookie GetAllocationInfo(const D3D12_RESOURCE_DESC* ptrDesc) noexcept;
 
             // Check feature support
             template<typename T>

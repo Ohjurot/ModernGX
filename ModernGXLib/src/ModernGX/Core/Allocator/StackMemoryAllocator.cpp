@@ -84,7 +84,7 @@ void* MGX::Core::Allocator::StackMemoryAllocator::Allocate(size_t size) noexcept
 void MGX::Core::Allocator::StackMemoryAllocator::Free(void* memory) noexcept
 {
     // Slot index
-    UINT32 slotIndex = ( ((UINT64)memory) - ((UINT64)m_ptrMemory) ) / m_slotSize;
+    UINT32 slotIndex = (UINT32)( ( ((UINT64)memory) - ((UINT64)m_ptrMemory) ) / m_slotSize);
 
     // Set index
     m_ac.Back(slotIndex);

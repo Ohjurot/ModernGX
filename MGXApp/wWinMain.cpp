@@ -1,12 +1,11 @@
 #include <ModernGX.h>
+#include <ModernGX/Util/Memory.h>
 #include <ModernGX/Foundation/HRException.h>
 #include <ModernGX/Core/GFXWindow.h>
 #include <ModernGX/Core/GPU/GPUDevice.h>
 #include <ModernGX/Core/GPU/GPUQueue.h>
 #include <ModernGX/Core/GPU/GPUCommandList.h>
-
-#include <ModernGX/Util/Memory.h>
-#include <ModernGX/Core/Allocator/MemoryAllocator.h>
+#include <ModernGX/Core/GPU/GPUHeap.h>
 
 // Windows enable visual styles
 #pragma comment(linker,"\"/manifestdependency:type='win32' \
@@ -19,15 +18,16 @@ INT wWinMain_safe(HINSTANCE hInstance, PWSTR cmdArgs, INT cmdShow)
 {
     // Init MGX
     MGX_INIT();
-
-    // TEST
-
-    // END 
     
     // Device
     Core::GPU::Device device; device.name(L"Main device");
     Core::GPU::CommandQueue queue(device); queue.name(L"Default direct queue");
     Core::GPU::CommandList list(device); list.name(L"Main direct command list");
+
+    // TEST
+    Core::GPU::Heap heap;
+    heap = std::move(Core::GPU::Heap(device, MemMiB(512)));
+    // END 
 
     // Create window
     Core::Window wnd(L"My Window", queue);
