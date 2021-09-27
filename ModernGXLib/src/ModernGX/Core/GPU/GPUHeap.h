@@ -22,7 +22,7 @@ namespace MGX::Core::GPU
     };
 
     // GPU Memory heap
-    class Heap : public Foundation::COMGetable<ID3D12Heap> 
+    class Heap
     {
         public:
             // Construct
@@ -44,5 +44,8 @@ namespace MGX::Core::GPU
         private:
             // Heap accelerator
             Allocator::ListMemoryAccelerator m_ac;
+
+            // DirectX Heap object
+            ComPointer<ID3D12Heap> m_ptrHeap;
     };
 }

@@ -59,7 +59,7 @@ UINT32 MGX::Core::Allocator::FastPoolAccelerator::AllocateSlot() noexcept
 
     // Set next free slot if possible
     if (m_ptrSlots && next != UINT32_MAX) {
-        m_nextFreeSlot = m_ptrSlots[m_nextFreeSlot].nextFreeSlot;
+        m_nextFreeSlot = m_ptrSlots[next].nextFreeSlot;
 
         // Allocation succeded
         m_slotUsage++;

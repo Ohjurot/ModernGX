@@ -28,7 +28,7 @@ MGX::Core::GPU::Heap::Heap(ID3D12Device* ptrDevice, UINT64 size, HeapUsage usage
     hd.Properties.VisibleNodeMask = NULL;
 
     // Create heap
-    ptrDevice->CreateHeap(&hd, IID_PPV_ARGS(&m_ptrBase));
+    ptrDevice->CreateHeap(&hd, IID_PPV_ARGS(&m_ptrHeap));
 }
 
 MGX::Core::GPU::Heap& MGX::Core::GPU::Heap::operator=(Heap&& other) noexcept
@@ -40,10 +40,10 @@ MGX::Core::GPU::Heap& MGX::Core::GPU::Heap::operator=(Heap&& other) noexcept
     m_ac = std::move(other.m_ac);
 
     // Copy
-    m_ptrBase = other.m_ptrBase;
+    m_ptrHeap = other.m_ptrHeap;
 
     // Invalidate
-    other.m_ptrBase = nullptr;
+    other.m_ptrHeap = nullptr;
 
     return *this;
 }
@@ -59,7 +59,7 @@ bool MGX::Core::GPU::Heap::Allocate(HeapAllocationCookie* ptrCookie) noexcept
     {
         // Set other members
         ptrCookie->offset = D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT * slotOffset;
-        ptrCookie->ptrHeap = m_ptrBase;
+        ptrCookie->ptrHeap = m_ptrHeap;
 
         // Succeeded
         return true;
