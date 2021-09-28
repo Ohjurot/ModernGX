@@ -28,7 +28,7 @@ MGX::Core::GPU::Heap::Heap(ID3D12Device* ptrDevice, UINT64 size, HeapUsage usage
     hd.Properties.VisibleNodeMask = NULL;
 
     // Create heap
-    ptrDevice->CreateHeap(&hd, IID_PPV_ARGS(&m_ptrHeap));
+    MGX_EVALUATE_HRESULT("ID3D12Device->CreateHeap(...)", ptrDevice->CreateHeap(&hd, IID_PPV_ARGS(&m_ptrHeap)));
 }
 
 MGX::Core::GPU::Heap& MGX::Core::GPU::Heap::operator=(Heap&& other) noexcept
