@@ -5,7 +5,9 @@
 #include <ModernGX/Core/GPU/GPUDevice.h>
 #include <ModernGX/Core/GPU/GPUQueue.h>
 #include <ModernGX/Core/GPU/GPUCommandList.h>
-#include <ModernGX/Core/GPU/GPUDescriptorHeap.h>
+
+#include <ModernGX/Core/GPU/GPUHeap.h>
+#include <ModernGX/Core/GPU/GPUResource.h>
 
 // Windows enable visual styles
 #pragma comment(linker,"\"/manifestdependency:type='win32' \
