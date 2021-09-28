@@ -47,7 +47,10 @@ MGX::Core::GPU::DescriptorHeap::DescriptorHeap(ID3D12Device* ptrDevice, Descript
     m_descriptorIncrement = ptrDevice->GetDescriptorHandleIncrementSize(dhd.Type);
 
     // Get base addresses
-    m_baseGpu = m_ptrBase->GetGPUDescriptorHandleForHeapStart();
+    if ((usage != DescriptorHeapUsage::RenderTargetView) && (usage != DescriptorHeapUsage::DepthStencilView)) 
+    {
+        m_baseGpu = m_ptrBase->GetGPUDescriptorHandleForHeapStart();
+    }
     m_baseCpu = m_ptrBase->GetCPUDescriptorHandleForHeapStart();
 
     // Usage

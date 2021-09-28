@@ -23,21 +23,26 @@ INT wWinMain_safe(HINSTANCE hInstance, PWSTR cmdArgs, INT cmdShow)
     
     // Device
     Core::GPU::Device device; device.name(L"Main device");
+    
+    // Commands
     Core::GPU::CommandQueue queue(device); queue.name(L"Default direct queue");
     Core::GPU::CommandList list(device); list.name(L"Main direct command list");
+
+    // RTV Heap
+    Core::GPU::DescriptorHeap rtvDescHeap(device, Core::GPU::DescriptorHeapUsage::RenderTargetView, 32);
 
     // TEST
     // END 
 
     // Create window
-    Core::Window wnd(L"My Window", queue);
+    Core::Window wnd(L"My Window", device, queue, rtvDescHeap.Allocate(3));
 
     // Prcoess window events
     while (wnd.ProcessWindowEvents()) {
         // Window resizing
         if (wnd.NeedsResizing()) {
             queue.Flush(wnd.GetBufferCount());
-            wnd.ResizeNow();
+            wnd.ResizeNow(device);
         }
 
         // TODO: Render loop

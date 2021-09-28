@@ -1,9 +1,12 @@
 #pragma once
 
 #include <ModernGX.h>
+#include <ModernGX/Util/EasyHWND.h>
 #include <ModernGX/Foundation/HRException.h>
 #include <ModernGX/Core/GPU/GPUResource.h>
-#include <ModernGX/Util/EasyHWND.h>
+#include <ModernGX/Core/GPU/GPUDescriptorHeap.h>
+
+#include <exception>
 
 namespace MGX::Core {
     // Window class
@@ -13,7 +16,7 @@ namespace MGX::Core {
             // Construct
             Window() = delete;
             Window(const Window&) = delete;
-            Window(LPCWSTR title, ID3D12CommandQueue* ptrCommandQueue, bool borderless = false, bool trippleBuffering = false);
+            Window(LPCWSTR title, ID3D12Device* ptrDevice, ID3D12CommandQueue* ptrCommandQueue, GPU::DescriptorRange rtvRange, bool borderless = false, bool trippleBuffering = false);
 
             // Destructor
             ~Window();
@@ -23,7 +26,7 @@ namespace MGX::Core {
 
             // Swap chain sizing
             bool NeedsResizing() noexcept;
-            void ResizeNow() noexcept;
+            void ResizeNow(ID3D12Device* ptrDevice) noexcept;
 
             // Present window
             void Present(bool vsync = false) noexcept;
@@ -36,9 +39,12 @@ namespace MGX::Core {
                 return m_bufferCount;
             }
 
+            // Rtv Handle
+            D3D12_CPU_DESCRIPTOR_HANDLE GetRtvCpuHanlde(unsigned int idx) noexcept;
+
         private:
             // Buffer release and construct
-            void __getBuffers();
+            void __getBuffers(ID3D12Device* ptrDevice);
             void __releaseBuffers() noexcept;
 
         protected:
@@ -56,6 +62,9 @@ namespace MGX::Core {
             GPU::Resource m_ptrBuffers[3];
             unsigned int m_bufferIndex = 0;
             const unsigned int m_bufferCount;
+
+            // RTV Descriptors (Size >= 3)
+            GPU::DescriptorRange m_rtvRange;
 
             // Size
             UINT m_width = 0;

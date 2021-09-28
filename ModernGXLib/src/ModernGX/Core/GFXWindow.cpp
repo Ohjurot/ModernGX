@@ -3,10 +3,17 @@
 
 EasyHWND::WindowClass MGX::Core::Window::s_wndCls(L"MGX_WND_CLS", CS_OWNDC);
 
-MGX::Core::Window::Window(LPCWSTR title, ID3D12CommandQueue* ptrCommandQueue, bool borderless, bool trippleBuffering) :
+MGX::Core::Window::Window(LPCWSTR title, ID3D12Device* ptrDevice, ID3D12CommandQueue* ptrCommandQueue, GPU::DescriptorRange rtvRange, bool borderless, bool trippleBuffering) :
     EasyHWND::Window(s_wndCls, title, 0, 0, 1920, 1080, borderless ? WS_POPUP : WS_OVERLAPPEDWINDOW),
-    m_bufferCount(trippleBuffering ? 3 : 2)
+    m_bufferCount(trippleBuffering ? 3 : 2),
+    m_rtvRange(rtvRange)
 {
+    // Validate range
+    if (m_rtvRange.GetSize() < 3)
+    {
+        throw std::exception("The MGX::Core::Window requires a descriptor range of minimum 3 descriptors");
+    }
+
     // Get cursor screen
     POINT cursorPos = { 0,0 };
     GetCursorPos(&cursorPos);
@@ -86,7 +93,7 @@ MGX::Core::Window::Window(LPCWSTR title, ID3D12CommandQueue* ptrCommandQueue, bo
     MGX_EVALUATE_HRESULT("IDXGIFactory2->CreateSwapChainForHwnd(...)", ptrFactory->CreateSwapChainForHwnd(ptrCommandQueue, this->operator HWND(), &sd, &fd, NULL, &m_ptrSwapChain));
 
     // Get buffers
-    __getBuffers();
+    __getBuffers(ptrDevice);
 }
 
 MGX::Core::Window::~Window() 
@@ -115,7 +122,7 @@ bool MGX::Core::Window::NeedsResizing() noexcept
     return m_needsResize;
 }
 
-void MGX::Core::Window::ResizeNow() noexcept 
+void MGX::Core::Window::ResizeNow(ID3D12Device* ptrDevice) noexcept
 {
     // Drop buffer
     __releaseBuffers();
@@ -136,7 +143,7 @@ void MGX::Core::Window::ResizeNow() noexcept
     }
 
     // Get buffers
-    __getBuffers();
+    __getBuffers(ptrDevice);
 }
 
 void MGX::Core::Window::Present(bool vsync) noexcept 
@@ -155,7 +162,12 @@ MGX::Core::GPU::Resource* MGX::Core::Window::GetBuffer(unsigned int idx) noexcep
     return idx < GetBufferCount() ? &m_ptrBuffers[idx] : nullptr;
 }
 
-void MGX::Core::Window::__getBuffers() 
+D3D12_CPU_DESCRIPTOR_HANDLE MGX::Core::Window::GetRtvCpuHanlde(unsigned int idx) noexcept
+{
+    return idx < GetBufferCount() ? m_rtvRange[idx].cpu : D3D12_CPU_DESCRIPTOR_HANDLE({ 0 });
+}
+
+void MGX::Core::Window::__getBuffers(ID3D12Device* ptrDevice)
 {
     // Get each buffer
     for (unsigned int i = 0; i < GetBufferCount(); i++) 
@@ -166,6 +178,9 @@ void MGX::Core::Window::__getBuffers()
 
         // Store buffer
         m_ptrBuffers[i] = GPU::Resource(ptrResource, D3D12_RESOURCE_STATE_PRESENT);
+
+        // Create descriptor
+        ptrDevice->CreateRenderTargetView(ptrResource, NULL, m_rtvRange[i].cpu);
 
         // Naming
         #ifndef MGX_DISABLE_INTERNAL_D3D_NAMEING
