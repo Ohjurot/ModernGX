@@ -9,6 +9,19 @@
 
 namespace MGX::Core::GPU
 {
+    // Type of resource
+    enum class ResourceType
+    {
+        // Physical Memory - Memory managed by directx
+        Committed,
+
+        // Physical Memory - Memory managed by application
+        Placed,
+
+        // Virtual Memory - Memory managed by application
+        Reserved,
+    };
+
     // Common GPU Resource
     class Resource : public Foundation::COMGetable<ID3D12Resource>
     {
@@ -21,12 +34,20 @@ namespace MGX::Core::GPU
                 const D3D12_CLEAR_VALUE* ptrClearValue = nullptr, D3D12_HEAP_FLAGS heapFlags = D3D12_HEAP_FLAG_NONE);
             Resource(ID3D12Device* ptrDevice, const D3D12_RESOURCE_DESC* ptrDesc, HeapAllocationCookie allocationCookie, D3D12_RESOURCE_STATES initialState = D3D12_RESOURCE_STATE_COMMON,
                 const D3D12_CLEAR_VALUE* ptrClearValue = nullptr);
+            Resource(ID3D12Device* ptrDevice, const D3D12_RESOURCE_DESC* ptrDesc, D3D12_RESOURCE_STATES initialState = D3D12_RESOURCE_STATE_COMMON,
+                const D3D12_CLEAR_VALUE* ptrClearValue = nullptr);
 
             // Copy
             Resource& operator=(const Resource&) = delete;
 
             // Move
             Resource& operator=(Resource&& other) noexcept;
+
+            // Retrive type of resource
+            inline ResourceType GetResourceType() const noexcept
+            {
+                return m_typeOfResource;
+            }
 
             // Retrive state
             inline D3D12_RESOURCE_STATES GetResourceState() const noexcept
@@ -45,6 +66,9 @@ namespace MGX::Core::GPU
             }
 
         private:
+            // Type of resource
+            ResourceType m_typeOfResource = ResourceType::Committed;
+
             // Resource state
             D3D12_RESOURCE_STATES m_currentState = D3D12_RESOURCE_STATE_COMMON;
     };

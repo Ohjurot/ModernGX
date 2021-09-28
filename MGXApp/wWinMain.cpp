@@ -29,7 +29,8 @@ INT wWinMain_safe(HINSTANCE hInstance, PWSTR cmdArgs, INT cmdShow)
     Core::GPU::CommandList list(device); list.name(L"Main direct command list");
 
     // RTV Heap
-    Core::GPU::DescriptorHeap rtvDescHeap(device, Core::GPU::DescriptorHeapUsage::RenderTargetView, 32);
+    Core::GPU::DescriptorHeap rtvDescHeap(device, Core::GPU::DescriptorHeapUsage::RenderTargetView, 16); 
+    rtvDescHeap.name(L"RTV Descriptor Heap");
 
     // TEST
     // END 
