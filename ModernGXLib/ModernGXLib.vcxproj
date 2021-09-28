@@ -113,6 +113,7 @@
     <ClInclude Include="src\ModernGX\Util\ComPointer.h" />
     <ClInclude Include="src\ModernGX\Util\EasyHWND.h" />
     <ClInclude Include="src\ModernGX\Util\Memory.h" />
+    <ClInclude Include="vendor\tinyxml2\tinyxml2.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\ModernGX.cpp">
@@ -134,6 +135,7 @@
     <ClCompile Include="src\ModernGX\Core\GPU\GPUHeap.cpp" />
     <ClCompile Include="src\ModernGX\Core\GPU\GPUQueue.cpp" />
     <ClCompile Include="src\ModernGX\Foundation\HRException.cpp" />
+    <ClCompile Include="vendor\tinyxml2\tinyxml2.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
