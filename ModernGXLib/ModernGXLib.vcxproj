@@ -104,6 +104,7 @@
     <ClInclude Include="src\ModernGX\Core\Concurrent\SpinLock.h" />
     <ClInclude Include="src\ModernGX\Core\GFXWindow.h" />
     <ClInclude Include="src\ModernGX\Core\GPU\GPUCommandList.h" />
+    <ClInclude Include="src\ModernGX\Core\GPU\GPUDescriptorHeap.h" />
     <ClInclude Include="src\ModernGX\Core\GPU\GPUDevice.h" />
     <ClInclude Include="src\ModernGX\Core\GPU\GPUHeap.h" />
     <ClInclude Include="src\ModernGX\Core\GPU\GPUHeapAllocationCookie.h" />
@@ -131,6 +132,7 @@
     <ClCompile Include="src\ModernGX\Core\Concurrent\SpinLock.cpp" />
     <ClCompile Include="src\ModernGX\Core\GFXWindow.cpp" />
     <ClCompile Include="src\ModernGX\Core\GPU\GPUCommandList.cpp" />
+    <ClCompile Include="src\ModernGX\Core\GPU\GPUDescriptorHeap.cpp" />
     <ClCompile Include="src\ModernGX\Core\GPU\GPUDevice.cpp" />
     <ClCompile Include="src\ModernGX\Core\GPU\GPUHeap.cpp" />
     <ClCompile Include="src\ModernGX\Core\GPU\GPUQueue.cpp" />

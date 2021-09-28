@@ -5,7 +5,7 @@
 #include <ModernGX/Core/GPU/GPUDevice.h>
 #include <ModernGX/Core/GPU/GPUQueue.h>
 #include <ModernGX/Core/GPU/GPUCommandList.h>
-#include <ModernGX/Core/GPU/GPUHeap.h>
+#include <ModernGX/Core/GPU/GPUDescriptorHeap.h>
 
 // Windows enable visual styles
 #pragma comment(linker,"\"/manifestdependency:type='win32' \
@@ -25,8 +25,6 @@ INT wWinMain_safe(HINSTANCE hInstance, PWSTR cmdArgs, INT cmdShow)
     Core::GPU::CommandList list(device); list.name(L"Main direct command list");
 
     // TEST
-    Core::GPU::Heap heap;
-    heap = std::move(Core::GPU::Heap(device, MemMiB(512)));
     // END 
 
     // Create window
