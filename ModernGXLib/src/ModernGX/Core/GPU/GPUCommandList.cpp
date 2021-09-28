@@ -8,6 +8,11 @@ MGX::Core::GPU::CommandList::CommandList(ID3D12Device* ptrDevice, D3D12_COMMAND_
 
     // Create command list
     MGX_EVALUATE_HRESULT("ID3D12Device->CreateCommandList(...)", ptrDevice->CreateCommandList(NULL, type, m_ptrAllocator, nullptr, IID_PPV_ARGS(&m_ptrBase)));
+
+    // On debug clear memory
+    #ifdef _DEBUG
+    memset(m_resBarriers, 0x00, sizeof(D3D12_RESOURCE_BARRIER) * 256);
+    #endif
 }
 
 MGX::Core::GPU::CommandList& MGX::Core::GPU::CommandList::operator=(CommandList&& other) noexcept 
@@ -29,6 +34,9 @@ void MGX::Core::GPU::CommandList::Close() noexcept
 {
     if (m_bOpen) 
     {
+        // Flush barriers
+        ResourceBarrierFlush();
+
         // Close command list
         m_ptrBase->Close();
 
@@ -47,13 +55,29 @@ void MGX::Core::GPU::CommandList::Reset() noexcept
 
         // Set state
         m_bOpen = true;
-
     }
 }
 
 bool MGX::Core::GPU::CommandList::IsOpen() noexcept 
 {
     return m_bOpen;
+}
+
+void MGX::Core::GPU::CommandList::ResourceBarrierFlush() noexcept
+{
+    if (m_barrierUsage)
+    {
+        // Add to command list
+        m_ptrBase->ResourceBarrier(m_barrierUsage, m_resBarriers);
+
+        // On debug clear memory
+        #ifdef _DEBUG
+        memset(m_resBarriers, 0x00, sizeof(D3D12_RESOURCE_BARRIER) * (m_barrierUsage + 1));
+        #endif
+
+        // Reset usage
+        m_barrierUsage = 0;
+    }
 }
 
 HRESULT MGX::Core::GPU::CommandList::name(LPCWSTR name)
