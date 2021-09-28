@@ -32,16 +32,29 @@ namespace MGX::Core::GPU {
             {
                 return &m_resBarriers[m_barrierUsage];
             }
+
             // Incrment barrieren usage
             inline void ResourceBarrierPush() noexcept
             {
                 m_barrierUsage++;
             }
+
+            // Peek next barrier and push it (accept usage)
+            inline D3D12_RESOURCE_BARRIER* ResourceBarrierPeekAndPush() noexcept
+            {
+                return &m_resBarriers[m_barrierUsage++];
+            }
+
             // Flush ressource barriere execution
             void ResourceBarrierFlush() noexcept;
 
             // Name command list
             HRESULT name(LPCWSTR name) override;
+
+            // === COMMANDS ===
+
+            // RTV Clearing
+            void ClearRenderTarget(D3D12_CPU_DESCRIPTOR_HANDLE rtView, FLOAT clearValue[4] = nullptr);
 
         private:
             // Command allocator

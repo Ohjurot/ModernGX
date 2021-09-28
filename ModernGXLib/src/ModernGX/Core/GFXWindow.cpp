@@ -162,7 +162,7 @@ MGX::Core::GPU::Resource* MGX::Core::Window::GetBuffer(unsigned int idx) noexcep
     return idx < GetBufferCount() ? &m_ptrBuffers[idx] : nullptr;
 }
 
-D3D12_CPU_DESCRIPTOR_HANDLE MGX::Core::Window::GetRtvCpuHanlde(unsigned int idx) noexcept
+D3D12_CPU_DESCRIPTOR_HANDLE MGX::Core::Window::GetRtvCpuHandle(unsigned int idx) noexcept
 {
     return idx < GetBufferCount() ? m_rtvRange[idx].cpu : D3D12_CPU_DESCRIPTOR_HANDLE({ 0 });
 }

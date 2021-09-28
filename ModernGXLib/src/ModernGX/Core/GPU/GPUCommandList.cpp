@@ -87,3 +87,19 @@ HRESULT MGX::Core::GPU::CommandList::name(LPCWSTR name)
     if (FAILED(hr = m_ptrAllocator.name(name))) return hr;
     return hr;
 }
+
+void MGX::Core::GPU::CommandList::ClearRenderTarget(D3D12_CPU_DESCRIPTOR_HANDLE rtView, FLOAT clearValue[4])
+{
+    // Flush all barrieres
+    ResourceBarrierFlush();
+
+    // Parameter check
+    if (!clearValue)
+    {
+        static FLOAT defaultColor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+        clearValue = defaultColor;
+    }
+
+    // Dispatch call
+    m_ptrBase->ClearRenderTargetView(rtView, clearValue, 0, nullptr);
+}

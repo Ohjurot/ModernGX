@@ -45,10 +45,25 @@ INT wWinMain_safe(HINSTANCE hInstance, PWSTR cmdArgs, INT cmdShow)
             wnd.ResizeNow(device);
         }
 
+        // === Rendering ===
         // TODO: Render loop
-        queue.Flush(1);
+
+        // === Window Compositing ===
         
-        // Present frame
+        // Set Resource to RTV
+        wnd.GetBuffer(wnd.GetCurrentBufferIndex())->SetResourceState(D3D12_RESOURCE_STATE_RENDER_TARGET, list.ResourceBarrierPeekAndPush());
+        // Clear RT
+        list.ClearRenderTarget(wnd.GetRtvCpuHandle(wnd.GetCurrentBufferIndex()));
+
+        // TODO: Composition
+
+        // Set Resource to RTV
+        wnd.GetBuffer(wnd.GetCurrentBufferIndex())->SetResourceState(D3D12_RESOURCE_STATE_PRESENT, list.ResourceBarrierPeekAndPush());
+        
+        // === Execute and Present ===
+        list.Close();
+        queue.Wait(queue.Execute(list));
+        list.Reset();
         wnd.Present();
     }
 

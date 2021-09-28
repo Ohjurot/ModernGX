@@ -40,7 +40,7 @@ namespace MGX::Core {
             }
 
             // Rtv Handle
-            D3D12_CPU_DESCRIPTOR_HANDLE GetRtvCpuHanlde(unsigned int idx) noexcept;
+            D3D12_CPU_DESCRIPTOR_HANDLE GetRtvCpuHandle(unsigned int idx) noexcept;
 
         private:
             // Buffer release and construct
