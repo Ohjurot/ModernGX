@@ -2,6 +2,7 @@
 
 #include <ModernGX.h>
 #include <ModernGX/Foundation/HRException.h>
+#include <ModernGX/Core/GPU/GPUResource.h>
 #include <ModernGX/Util/EasyHWND.h>
 
 namespace MGX::Core {
@@ -29,7 +30,7 @@ namespace MGX::Core {
 
             // Buffers
             unsigned int GetCurrentBufferIndex() noexcept;
-            ID3D12Resource* GetBuffer(unsigned int idx) noexcept;
+            GPU::Resource* GetBuffer(unsigned int idx) noexcept;
             inline unsigned int GetBufferCount() const noexcept 
             {
                 return m_bufferCount;
@@ -52,7 +53,7 @@ namespace MGX::Core {
             ComPointer<IDXGISwapChain1> m_ptrSwapChain;
 
             // Buffers
-            ComPointer<ID3D12Resource> m_ptrBuffers[3];
+            GPU::Resource m_ptrBuffers[3];
             unsigned int m_bufferIndex = 0;
             const unsigned int m_bufferCount;
 

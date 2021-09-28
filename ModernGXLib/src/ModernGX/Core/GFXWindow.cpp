@@ -150,9 +150,9 @@ unsigned int MGX::Core::Window::GetCurrentBufferIndex() noexcept
     return m_bufferIndex;
 }
 
-ID3D12Resource* MGX::Core::Window::GetBuffer(unsigned int idx) noexcept 
+MGX::Core::GPU::Resource* MGX::Core::Window::GetBuffer(unsigned int idx) noexcept 
 {
-    return idx < GetBufferCount() ? m_ptrBuffers[idx] : nullptr;
+    return idx < GetBufferCount() ? &m_ptrBuffers[idx] : nullptr;
 }
 
 void MGX::Core::Window::__getBuffers() 
@@ -161,7 +161,11 @@ void MGX::Core::Window::__getBuffers()
     for (unsigned int i = 0; i < GetBufferCount(); i++) 
     {
         // Get buffer
-        m_ptrSwapChain->GetBuffer(i, IID_PPV_ARGS(&m_ptrBuffers[i]));
+        ComPointer<ID3D12Resource> ptrResource = nullptr;
+        m_ptrSwapChain->GetBuffer(i, IID_PPV_ARGS(&ptrResource));
+
+        // Store buffer
+        m_ptrBuffers[i] = GPU::Resource(ptrResource, D3D12_RESOURCE_STATE_PRESENT);
 
         // Naming
         #ifndef MGX_DISABLE_INTERNAL_D3D_NAMEING
@@ -195,7 +199,7 @@ void MGX::Core::Window::__releaseBuffers() noexcept
     // Release buffers
     for (unsigned int i = 0; i < GetBufferCount(); i++) 
     {
-        m_ptrBuffers[i].release();
+        m_ptrBuffers[i].~Resource();
     }
 }
 
