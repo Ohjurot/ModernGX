@@ -11,7 +11,7 @@
 	<!-- 
 		## Shader[s] ##
 		
-		Type: type of shader RS/VS/PS/HS/DS/GS/AS/MS
+		Type: type of shader VS/PS/HS/DS/GS/AS/MS
 		Path: path to shader without extension (will in the future 
 		      auto compile if shader is present in hlsl and not 
 			  recent

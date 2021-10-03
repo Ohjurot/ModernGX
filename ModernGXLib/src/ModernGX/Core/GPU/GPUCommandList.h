@@ -6,7 +6,8 @@
 
 #include <exception>
 
-namespace MGX::Core::GPU {
+namespace MGX::Core::GPU 
+{
     // Command queue
     class CommandList : public Foundation::COMGetable<ID3D12GraphicsCommandList> 
     {

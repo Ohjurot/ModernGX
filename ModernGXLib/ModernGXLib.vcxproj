@@ -47,13 +47,13 @@
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Configuration)\</IntDir>
-    <IncludePath>$(ProjectDir)src;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)src;$(ProjectDir)vendor;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)bin\$(Configuration)\</OutDir>
     <IntDir>$(SolutionDir)obj\$(ProjectName)\$(Configuration)\</IntDir>
-    <IncludePath>$(ProjectDir)src;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)src;$(ProjectDir)vendor;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -110,12 +110,18 @@
     <ClInclude Include="src\ModernGX\Core\GPU\GPUHeapAllocationCookie.h" />
     <ClInclude Include="src\ModernGX\Core\GPU\GPUQueue.h" />
     <ClInclude Include="src\ModernGX\Core\GPU\GPUResource.h" />
+    <ClInclude Include="src\ModernGX\Core\Serialisation\SerPipelineState.h" />
+    <ClInclude Include="src\ModernGX\Core\Serialisation\_internal_SerPipelineState.h" />
     <ClInclude Include="src\ModernGX\Foundation\COMGetable.h" />
     <ClInclude Include="src\ModernGX\Foundation\HRException.h" />
     <ClInclude Include="src\ModernGX\Util\ComPointer.h" />
     <ClInclude Include="src\ModernGX\Util\EasyHWND.h" />
+    <ClInclude Include="src\ModernGX\Util\Hash.h" />
     <ClInclude Include="src\ModernGX\Util\Memory.h" />
+    <ClInclude Include="src\ModernGX\Util\StrHashTable.h" />
+    <ClInclude Include="src\ModernGX\Util\TinyxmlHelpers.h" />
     <ClInclude Include="vendor\tinyxml2\tinyxml2.h" />
+    <ClInclude Include="vendor\xxhash\xxhash.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\ModernGX.cpp">
@@ -138,8 +144,18 @@
     <ClCompile Include="src\ModernGX\Core\GPU\GPUHeap.cpp" />
     <ClCompile Include="src\ModernGX\Core\GPU\GPUQueue.cpp" />
     <ClCompile Include="src\ModernGX\Core\GPU\GPUResource.cpp" />
+    <ClCompile Include="src\ModernGX\Core\Serialisation\_internal_SerPipelineState.cpp" />
     <ClCompile Include="src\ModernGX\Foundation\HRException.cpp" />
-    <ClCompile Include="vendor\tinyxml2\tinyxml2.cpp" />
+    <ClCompile Include="src\ModernGX\Util\Hash.cpp" />
+    <ClCompile Include="src\ModernGX\Util\Memory.cpp" />
+    <ClCompile Include="vendor\tinyxml2\tinyxml2.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="vendor\xxhash\xxhash.c">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
+    </ClCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

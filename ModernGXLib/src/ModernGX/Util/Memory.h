@@ -55,4 +55,8 @@ namespace MGX
         // Return 
         return *ppT != nullptr;
     }
+
+    // String allocate and copy
+    char* StrAllocateCopyA(Core::IAllocator* ptrAllocator, const char* ptrSource) noexcept;
+    wchar_t* StrAllocateCopyW(Core::IAllocator* ptrAllocator, const wchar_t* ptrSource) noexcept;
 }

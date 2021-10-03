@@ -19,3 +19,12 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+
+This software uses 3rd party software that may be licensed under other conditions.
+All files included in the "ModernGXLib/vendor" directory is NOT covered by this license.
+Please considere the seperate license files.
+
+3rd party software used:
+- tinyxml2 by Lee Thomason (zlib License)
+- xxhash by Yann Collet (BSD 2-Clause License)
