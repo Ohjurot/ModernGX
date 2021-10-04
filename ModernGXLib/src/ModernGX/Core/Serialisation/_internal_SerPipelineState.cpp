@@ -290,8 +290,15 @@ bool MGX::Core::Serialisation::PipelineState_helpers::DSerGfxPipelineState(D3D12
         if (attPsName)
         {
             // Set name
-            *ppPsoName = StrAllocateCopyA(ptrAllocator, attPsDescType->Value());
+            *ppPsoName = StrAllocateCopyA(ptrAllocator, attPsName->Value());
         }
+
+        // Default shaders
+        ptrStateDesc->PS = { 0,0 };
+        ptrStateDesc->VS = { 0,0 };
+        ptrStateDesc->GS = { 0,0 };
+        ptrStateDesc->HS = { 0,0 };
+        ptrStateDesc->DS = { 0,0 };
 
         // Read all shaders
         for (MGX_TINYXML_FOREACH(ptrRootElement, ptrShaderElement, "Shader"))
@@ -334,7 +341,7 @@ bool MGX::Core::Serialisation::PipelineState_helpers::DSerGfxPipelineState(D3D12
         auto ptrIBStripCutValueElement = ptrRootElement->FirstChildElement("IBStripCutValue");
         if (ptrIBStripCutValueElement)
         {
-            Util::XmlQueryOrDefault(ptrIBStripCutValueElement->FindAttribute("Value"), &ptrStateDesc->IBStripCutValue, D3D12_INDEX_BUFFER_STRIP_CUT_VALUE_DISABLED, s_D3D12_INDEX_BUFFER_STRIP_CUT_VALUE_table);
+            Util::XML::QueryOrDefault(ptrIBStripCutValueElement->FindAttribute("Value"), &ptrStateDesc->IBStripCutValue, D3D12_INDEX_BUFFER_STRIP_CUT_VALUE_DISABLED, s_D3D12_INDEX_BUFFER_STRIP_CUT_VALUE_table);
         }
         else
         {
@@ -345,7 +352,7 @@ bool MGX::Core::Serialisation::PipelineState_helpers::DSerGfxPipelineState(D3D12
         auto ptrPrimitiveTopologyTypeElement = ptrRootElement->FirstChildElement("PrimitiveTopologyType");
         if (ptrPrimitiveTopologyTypeElement)
         {
-            Util::XmlQueryOrDefault(ptrPrimitiveTopologyTypeElement->FindAttribute("Value"), &ptrStateDesc->PrimitiveTopologyType, D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE, s_D3D12_PRIMITIVE_TOPOLOGY_TYPE_table);
+            Util::XML::QueryOrDefault(ptrPrimitiveTopologyTypeElement->FindAttribute("Value"), &ptrStateDesc->PrimitiveTopologyType, D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE, s_D3D12_PRIMITIVE_TOPOLOGY_TYPE_table);
         }
         else
         {
@@ -475,7 +482,7 @@ bool MGX::Core::Serialisation::PipelineState_helpers::DSerLoadStreamOutput(D3D12
     if (ptrSOElement)
     {
         // Read Attribute value
-        Util::XmlQueryOrDefault(ptrSOElement->FindAttribute("RasterizedStream"), &ptrSODesc->RasterizedStream, 0U);
+        Util::XML::QueryOrDefault(ptrSOElement->FindAttribute("RasterizedStream"), &ptrSODesc->RasterizedStream, 0U);
 
         // Count Declaration(s)
         unsigned int numDeclarations = 0;
@@ -503,7 +510,7 @@ bool MGX::Core::Serialisation::PipelineState_helpers::DSerLoadStreamOutput(D3D12
         // Count Strides(s)
         unsigned int numStrides = 0;
         for (MGX_TINYXML_FOREACH(ptrSOElement, p, "Stride"))
-            numDeclarations++;
+            numStrides++;
         
         // Aquire strides
         if (numStrides)
@@ -515,7 +522,7 @@ bool MGX::Core::Serialisation::PipelineState_helpers::DSerLoadStreamOutput(D3D12
                 // Deserialize strides
                 UINT* ptrHead = ptrStrides;
                 for (MGX_TINYXML_FOREACH(ptrSOElement, ptrStrideElement, "Stride")) 
-                    Util::XmlQueryOrDefault(ptrStrideElement->FindAttribute("Value"), (ptrHead++), 0U);
+                    Util::XML::QueryOrDefault(ptrStrideElement->FindAttribute("Value"), (ptrHead++), 0U);
 
                 // Fill descriptor
                 ptrSODesc->pBufferStrides = ptrStrides;
@@ -536,11 +543,11 @@ bool MGX::Core::Serialisation::PipelineState_helpers::DSerLoadSOEntry(D3D12_SO_D
     if (ptrSOEntrieElement)
     {
         // Extract strait forward attributes
-        Util::XmlQueryOrDefault(ptrSOEntrieElement->FindAttribute("Stream"), &ptrSOEntrie->Stream, 0U);
-        Util::XmlQueryOrDefault(ptrSOEntrieElement->FindAttribute("SemanticIndex"), &ptrSOEntrie->SemanticIndex, 0U);
-        Util::XmlQueryOrDefault<BYTE>(ptrSOEntrieElement->FindAttribute("StartComponent"), &ptrSOEntrie->StartComponent, 0);
-        Util::XmlQueryOrDefault<BYTE>(ptrSOEntrieElement->FindAttribute("ComponentCount"), &ptrSOEntrie->ComponentCount, 0);
-        Util::XmlQueryOrDefault<BYTE>(ptrSOEntrieElement->FindAttribute("OutputSlot"), &ptrSOEntrie->OutputSlot, 0);
+        Util::XML::QueryOrDefault(ptrSOEntrieElement->FindAttribute("Stream"), &ptrSOEntrie->Stream, 0U);
+        Util::XML::QueryOrDefault(ptrSOEntrieElement->FindAttribute("SemanticIndex"), &ptrSOEntrie->SemanticIndex, 0U);
+        Util::XML::QueryOrDefault<BYTE>(ptrSOEntrieElement->FindAttribute("StartComponent"), &ptrSOEntrie->StartComponent, 0);
+        Util::XML::QueryOrDefault<BYTE>(ptrSOEntrieElement->FindAttribute("ComponentCount"), &ptrSOEntrie->ComponentCount, 0);
+        Util::XML::QueryOrDefault<BYTE>(ptrSOEntrieElement->FindAttribute("OutputSlot"), &ptrSOEntrie->OutputSlot, 0);
 
         // Extract string attribute
         auto attSemanticName = ptrSOEntrieElement->FindAttribute("SemanticName");
@@ -581,8 +588,8 @@ bool MGX::Core::Serialisation::PipelineState_helpers::DSerLoadBlendState(D3D12_B
     if (ptrBlendDescElement)
     {
         // Read naive attributes
-        Util::XmlQueryOrDefault(ptrBlendDescElement->FindAttribute("AlphaToCoverageEnable"), (bool*)&ptrBlendDesc->AlphaToCoverageEnable, false);
-        Util::XmlQueryOrDefault(ptrBlendDescElement->FindAttribute("IndependentBlendEnable"), (bool*)&ptrBlendDesc->IndependentBlendEnable, false);
+        Util::XML::QueryOrDefault(ptrBlendDescElement->FindAttribute("AlphaToCoverageEnable"), (bool*)&ptrBlendDesc->AlphaToCoverageEnable, false);
+        Util::XML::QueryOrDefault(ptrBlendDescElement->FindAttribute("IndependentBlendEnable"), (bool*)&ptrBlendDesc->IndependentBlendEnable, false);
 
         // Read sample mask
         auto attSampleMask = ptrBlendDescElement->FindAttribute("SampleMask");
@@ -624,15 +631,15 @@ bool MGX::Core::Serialisation::PipelineState_helpers::DSerLoadBlendState(D3D12_B
 bool MGX::Core::Serialisation::PipelineState_helpers::DSerLoadBlendStateRT(D3D12_RENDER_TARGET_BLEND_DESC* ptrBlendRtDesc, tinyxml2::XMLElement* ptrBlendRtDescElement, Allocator::StackMemoryAllocator* ptrAllocator) noexcept
 {
     // Naive attributes
-    Util::XmlQueryOrDefault(ptrBlendRtDescElement->FindAttribute("BlendEnable"), (bool*)&ptrBlendRtDesc->BlendEnable, false);
-    Util::XmlQueryOrDefault(ptrBlendRtDescElement->FindAttribute("LogicOpEnable"), (bool*)&ptrBlendRtDesc->LogicOpEnable, false);
-    Util::XmlQueryOrDefault(ptrBlendRtDescElement->FindAttribute("SrcBlend"), &ptrBlendRtDesc->SrcBlend, D3D12_BLEND_ONE, s_D3D12_BLEND_table);
-    Util::XmlQueryOrDefault(ptrBlendRtDescElement->FindAttribute("DestBlend"), &ptrBlendRtDesc->DestBlend, D3D12_BLEND_ZERO, s_D3D12_BLEND_table);
-    Util::XmlQueryOrDefault(ptrBlendRtDescElement->FindAttribute("BlendOp"), &ptrBlendRtDesc->BlendOp, D3D12_BLEND_OP_ADD, s_D3D12_BLEND_OP_table);
-    Util::XmlQueryOrDefault(ptrBlendRtDescElement->FindAttribute("SrcBlendAlpha"), &ptrBlendRtDesc->SrcBlendAlpha, D3D12_BLEND_ONE, s_D3D12_BLEND_table);
-    Util::XmlQueryOrDefault(ptrBlendRtDescElement->FindAttribute("DestBlendAlpha"), &ptrBlendRtDesc->DestBlendAlpha, D3D12_BLEND_ZERO, s_D3D12_BLEND_table);
-    Util::XmlQueryOrDefault(ptrBlendRtDescElement->FindAttribute("BlendOpAlpha"), &ptrBlendRtDesc->BlendOpAlpha, D3D12_BLEND_OP_ADD, s_D3D12_BLEND_OP_table);
-    Util::XmlQueryOrDefault(ptrBlendRtDescElement->FindAttribute("LogicOp"), &ptrBlendRtDesc->LogicOp, D3D12_LOGIC_OP_NOOP, s_D3D12_LOGIC_OP_table);
+    Util::XML::QueryOrDefault(ptrBlendRtDescElement->FindAttribute("BlendEnable"), (bool*)&ptrBlendRtDesc->BlendEnable, false);
+    Util::XML::QueryOrDefault(ptrBlendRtDescElement->FindAttribute("LogicOpEnable"), (bool*)&ptrBlendRtDesc->LogicOpEnable, false);
+    Util::XML::QueryOrDefault(ptrBlendRtDescElement->FindAttribute("SrcBlend"), &ptrBlendRtDesc->SrcBlend, D3D12_BLEND_ONE, s_D3D12_BLEND_table);
+    Util::XML::QueryOrDefault(ptrBlendRtDescElement->FindAttribute("DestBlend"), &ptrBlendRtDesc->DestBlend, D3D12_BLEND_ZERO, s_D3D12_BLEND_table);
+    Util::XML::QueryOrDefault(ptrBlendRtDescElement->FindAttribute("BlendOp"), &ptrBlendRtDesc->BlendOp, D3D12_BLEND_OP_ADD, s_D3D12_BLEND_OP_table);
+    Util::XML::QueryOrDefault(ptrBlendRtDescElement->FindAttribute("SrcBlendAlpha"), &ptrBlendRtDesc->SrcBlendAlpha, D3D12_BLEND_ONE, s_D3D12_BLEND_table);
+    Util::XML::QueryOrDefault(ptrBlendRtDescElement->FindAttribute("DestBlendAlpha"), &ptrBlendRtDesc->DestBlendAlpha, D3D12_BLEND_ZERO, s_D3D12_BLEND_table);
+    Util::XML::QueryOrDefault(ptrBlendRtDescElement->FindAttribute("BlendOpAlpha"), &ptrBlendRtDesc->BlendOpAlpha, D3D12_BLEND_OP_ADD, s_D3D12_BLEND_OP_table);
+    Util::XML::QueryOrDefault(ptrBlendRtDescElement->FindAttribute("LogicOp"), &ptrBlendRtDesc->LogicOp, D3D12_LOGIC_OP_NOOP, s_D3D12_LOGIC_OP_table);
 
     // RenderTargetWriteMask
     auto attRenderTargetWriteMask = ptrBlendRtDescElement->FindAttribute("RenderTargetWriteMask");
@@ -683,17 +690,17 @@ bool MGX::Core::Serialisation::PipelineState_helpers::DSerLoadRasterizerState(D3
     if (ptrRasterizerStateElement)
     {
         // Load values
-        Util::XmlQueryOrDefault(ptrRasterizerStateElement->FindAttribute("FillMode"), &ptrRasterizerState->FillMode, D3D12_FILL_MODE_SOLID, s_D3D12_FILL_MODE_table);
-        Util::XmlQueryOrDefault(ptrRasterizerStateElement->FindAttribute("CullMode"), &ptrRasterizerState->CullMode, D3D12_CULL_MODE_BACK, s_D3D12_CULL_MODE_table);
-        Util::XmlQueryOrDefault(ptrRasterizerStateElement->FindAttribute("FrontCounterClockwise"), (bool*)&ptrRasterizerState->FrontCounterClockwise, false);
-        Util::XmlQueryOrDefault(ptrRasterizerStateElement->FindAttribute("DepthBias"), &ptrRasterizerState->DepthBias, 0);
-        Util::XmlQueryOrDefault(ptrRasterizerStateElement->FindAttribute("DepthBiasClamp"), &ptrRasterizerState->DepthBiasClamp, 0.0f);
-        Util::XmlQueryOrDefault(ptrRasterizerStateElement->FindAttribute("SlopeScaledDepthBias"), &ptrRasterizerState->SlopeScaledDepthBias, 0.0f);
-        Util::XmlQueryOrDefault(ptrRasterizerStateElement->FindAttribute("DepthClipEnable"), (bool*)&ptrRasterizerState->DepthClipEnable, true);
-        Util::XmlQueryOrDefault(ptrRasterizerStateElement->FindAttribute("MultisampleEnable"), (bool*)&ptrRasterizerState->MultisampleEnable, false);
-        Util::XmlQueryOrDefault(ptrRasterizerStateElement->FindAttribute("AntialiasedLineEnable"), (bool*)&ptrRasterizerState->AntialiasedLineEnable, false);
-        Util::XmlQueryOrDefault(ptrRasterizerStateElement->FindAttribute("ForcedSampleCount"), &ptrRasterizerState->ForcedSampleCount, 0U);
-        Util::XmlQueryOrDefault(ptrRasterizerStateElement->FindAttribute("ConservativeRaster"), &ptrRasterizerState->ConservativeRaster, D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF, s_D3D12_CONSERVATIVE_RASTERIZATION_MODE_table);
+        Util::XML::QueryOrDefault(ptrRasterizerStateElement->FindAttribute("FillMode"), &ptrRasterizerState->FillMode, D3D12_FILL_MODE_SOLID, s_D3D12_FILL_MODE_table);
+        Util::XML::QueryOrDefault(ptrRasterizerStateElement->FindAttribute("CullMode"), &ptrRasterizerState->CullMode, D3D12_CULL_MODE_BACK, s_D3D12_CULL_MODE_table);
+        Util::XML::QueryOrDefault(ptrRasterizerStateElement->FindAttribute("FrontCounterClockwise"), (bool*)&ptrRasterizerState->FrontCounterClockwise, false);
+        Util::XML::QueryOrDefault(ptrRasterizerStateElement->FindAttribute("DepthBias"), &ptrRasterizerState->DepthBias, 0);
+        Util::XML::QueryOrDefault(ptrRasterizerStateElement->FindAttribute("DepthBiasClamp"), &ptrRasterizerState->DepthBiasClamp, 0.0f);
+        Util::XML::QueryOrDefault(ptrRasterizerStateElement->FindAttribute("SlopeScaledDepthBias"), &ptrRasterizerState->SlopeScaledDepthBias, 0.0f);
+        Util::XML::QueryOrDefault(ptrRasterizerStateElement->FindAttribute("DepthClipEnable"), (bool*)&ptrRasterizerState->DepthClipEnable, true);
+        Util::XML::QueryOrDefault(ptrRasterizerStateElement->FindAttribute("MultisampleEnable"), (bool*)&ptrRasterizerState->MultisampleEnable, false);
+        Util::XML::QueryOrDefault(ptrRasterizerStateElement->FindAttribute("AntialiasedLineEnable"), (bool*)&ptrRasterizerState->AntialiasedLineEnable, false);
+        Util::XML::QueryOrDefault(ptrRasterizerStateElement->FindAttribute("ForcedSampleCount"), &ptrRasterizerState->ForcedSampleCount, 0U);
+        Util::XML::QueryOrDefault(ptrRasterizerStateElement->FindAttribute("ConservativeRaster"), &ptrRasterizerState->ConservativeRaster, D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF, s_D3D12_CONSERVATIVE_RASTERIZATION_MODE_table);
 
         // Passed
         return true;
@@ -714,10 +721,10 @@ bool MGX::Core::Serialisation::PipelineState_helpers::DSerDepthStencilState(D3D1
     if (ptrDepthStencilStateElement)
     {
         // Load naive values
-        Util::XmlQueryOrDefault(ptrDepthStencilStateElement->FindAttribute("DepthEnable"), (bool*)&ptrDepthStencilState->DepthEnable, true);
-        Util::XmlQueryOrDefault(ptrDepthStencilStateElement->FindAttribute("DepthWriteMask"), &ptrDepthStencilState->DepthWriteMask, D3D12_DEPTH_WRITE_MASK_ALL, s_D3D12_DEPTH_WRITE_MASK_table);
-        Util::XmlQueryOrDefault(ptrDepthStencilStateElement->FindAttribute("DepthFunc"), &ptrDepthStencilState->DepthFunc, D3D12_COMPARISON_FUNC_LESS, s_D3D12_COMPARISON_FUNC_table);
-        Util::XmlQueryOrDefault(ptrDepthStencilStateElement->FindAttribute("StencilEnable"), (bool*)&ptrDepthStencilState->StencilEnable, false);
+        Util::XML::QueryOrDefault(ptrDepthStencilStateElement->FindAttribute("DepthEnable"), (bool*)&ptrDepthStencilState->DepthEnable, true);
+        Util::XML::QueryOrDefault(ptrDepthStencilStateElement->FindAttribute("DepthWriteMask"), &ptrDepthStencilState->DepthWriteMask, D3D12_DEPTH_WRITE_MASK_ALL, s_D3D12_DEPTH_WRITE_MASK_table);
+        Util::XML::QueryOrDefault(ptrDepthStencilStateElement->FindAttribute("DepthFunc"), &ptrDepthStencilState->DepthFunc, D3D12_COMPARISON_FUNC_LESS, s_D3D12_COMPARISON_FUNC_table);
+        Util::XML::QueryOrDefault(ptrDepthStencilStateElement->FindAttribute("StencilEnable"), (bool*)&ptrDepthStencilState->StencilEnable, false);
         
         // Stencil read mask
         auto attStencilReadMask = ptrDepthStencilStateElement->FindAttribute("StencilReadMask");
@@ -759,10 +766,10 @@ bool MGX::Core::Serialisation::PipelineState_helpers::DSerDepthStencilState(D3D1
 bool MGX::Core::Serialisation::PipelineState_helpers::DSerStencilOp(D3D12_DEPTH_STENCILOP_DESC* ptrStencilOp, tinyxml2::XMLElement* ptrStencilOpElement, Allocator::StackMemoryAllocator* ptrAllocator) noexcept
 {
     // Load values
-    Util::XmlQueryOrDefault(ptrStencilOpElement->FindAttribute("StencilFailOp"), &ptrStencilOp->StencilFailOp, D3D12_STENCIL_OP_KEEP, s_D3D12_STENCIL_OP_table);
-    Util::XmlQueryOrDefault(ptrStencilOpElement->FindAttribute("StencilDepthFailOp"), &ptrStencilOp->StencilDepthFailOp, D3D12_STENCIL_OP_KEEP, s_D3D12_STENCIL_OP_table);
-    Util::XmlQueryOrDefault(ptrStencilOpElement->FindAttribute("StencilPassOp"), &ptrStencilOp->StencilPassOp, D3D12_STENCIL_OP_KEEP, s_D3D12_STENCIL_OP_table);
-    Util::XmlQueryOrDefault(ptrStencilOpElement->FindAttribute("StencilFunc"), &ptrStencilOp->StencilFunc, D3D12_COMPARISON_FUNC_ALWAYS, s_D3D12_COMPARISON_FUNC_table);
+    Util::XML::QueryOrDefault(ptrStencilOpElement->FindAttribute("StencilFailOp"), &ptrStencilOp->StencilFailOp, D3D12_STENCIL_OP_KEEP, s_D3D12_STENCIL_OP_table);
+    Util::XML::QueryOrDefault(ptrStencilOpElement->FindAttribute("StencilDepthFailOp"), &ptrStencilOp->StencilDepthFailOp, D3D12_STENCIL_OP_KEEP, s_D3D12_STENCIL_OP_table);
+    Util::XML::QueryOrDefault(ptrStencilOpElement->FindAttribute("StencilPassOp"), &ptrStencilOp->StencilPassOp, D3D12_STENCIL_OP_KEEP, s_D3D12_STENCIL_OP_table);
+    Util::XML::QueryOrDefault(ptrStencilOpElement->FindAttribute("StencilFunc"), &ptrStencilOp->StencilFunc, D3D12_COMPARISON_FUNC_ALWAYS, s_D3D12_COMPARISON_FUNC_table);
 
     // Passed
     return true;
@@ -775,8 +782,8 @@ bool MGX::Core::Serialisation::PipelineState_helpers::DSerSampleDesc(DXGI_SAMPLE
     if (ptrSampleDesc)
     {
         // Read values
-        Util::XmlQueryOrDefault(ptrSampleDescElement->FindAttribute("Count"), &ptrSampleDesc->Count, 1U);
-        Util::XmlQueryOrDefault(ptrSampleDescElement->FindAttribute("Quality"), &ptrSampleDesc->Quality, 0U);
+        Util::XML::QueryOrDefault(ptrSampleDescElement->FindAttribute("Count"), &ptrSampleDesc->Count, 1U);
+        Util::XML::QueryOrDefault(ptrSampleDescElement->FindAttribute("Quality"), &ptrSampleDesc->Quality, 0U);
 
         // Ok
         return true;
@@ -828,12 +835,12 @@ bool MGX::Core::Serialisation::PipelineState_helpers::DSerInputLayouts(D3D12_INP
 bool MGX::Core::Serialisation::PipelineState_helpers::DSerInputLayoutElement(D3D12_INPUT_ELEMENT_DESC* ptrInputLayoutElement, tinyxml2::XMLElement* ptrInputLayoutElementElement, Allocator::StackMemoryAllocator* ptrAllocator) noexcept
 {
     // Find strait forward
-    Util::XmlQueryOrDefault(ptrInputLayoutElementElement->FindAttribute("SemanticIndex"), &ptrInputLayoutElement->SemanticIndex, 0U);
-    Util::XmlQueryOrDefault(ptrInputLayoutElementElement->FindAttribute("Format"), &ptrInputLayoutElement->Format, DXGI_FORMAT_UNKNOWN, s_DXGI_FORMAT_table);
-    Util::XmlQueryOrDefault(ptrInputLayoutElementElement->FindAttribute("InputSlot"), &ptrInputLayoutElement->InputSlot, 0U);
-    Util::XmlQueryOrDefault(ptrInputLayoutElementElement->FindAttribute("AlignedByteOffset"), &ptrInputLayoutElement->AlignedByteOffset, 0xffffffffU);
-    Util::XmlQueryOrDefault(ptrInputLayoutElementElement->FindAttribute("InputSlotClass"), &ptrInputLayoutElement->InputSlotClass, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, s_D3D12_INPUT_CLASSIFICATION_table);
-    Util::XmlQueryOrDefault(ptrInputLayoutElementElement->FindAttribute("InstanceDataStepRate"), &ptrInputLayoutElement->InstanceDataStepRate, 0U);
+    Util::XML::QueryOrDefault(ptrInputLayoutElementElement->FindAttribute("SemanticIndex"), &ptrInputLayoutElement->SemanticIndex, 0U);
+    Util::XML::QueryOrDefault(ptrInputLayoutElementElement->FindAttribute("Format"), &ptrInputLayoutElement->Format, DXGI_FORMAT_UNKNOWN, s_DXGI_FORMAT_table);
+    Util::XML::QueryOrDefault(ptrInputLayoutElementElement->FindAttribute("InputSlot"), &ptrInputLayoutElement->InputSlot, 0U);
+    Util::XML::QueryOrDefault(ptrInputLayoutElementElement->FindAttribute("AlignedByteOffset"), &ptrInputLayoutElement->AlignedByteOffset, 0xffffffffU);
+    Util::XML::QueryOrDefault(ptrInputLayoutElementElement->FindAttribute("InputSlotClass"), &ptrInputLayoutElement->InputSlotClass, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, s_D3D12_INPUT_CLASSIFICATION_table);
+    Util::XML::QueryOrDefault(ptrInputLayoutElementElement->FindAttribute("InstanceDataStepRate"), &ptrInputLayoutElement->InstanceDataStepRate, 0U);
 
     // Find text
     auto attSemanticName = ptrInputLayoutElementElement->FindAttribute("SemanticName");
@@ -860,7 +867,7 @@ bool MGX::Core::Serialisation::PipelineState_helpers::DSerRenderTargets(DXGI_FOR
     }
 
     // Get DSV Format
-    Util::XmlQueryOrDefault(ptrRenderTargetsElement->FindAttribute("DSVFormat"), ptrDSVFormat, DXGI_FORMAT_UNKNOWN);
+    Util::XML::QueryOrDefault(ptrRenderTargetsElement->FindAttribute("DSVFormat"), ptrDSVFormat, DXGI_FORMAT_UNKNOWN, s_DXGI_FORMAT_table);
 
     // Get RTV Formats
     unsigned int rtvFormatCount = 0;
@@ -869,7 +876,7 @@ bool MGX::Core::Serialisation::PipelineState_helpers::DSerRenderTargets(DXGI_FOR
         // Aquire format
         if (rtvFormatCount < 8)
         {
-            Util::XmlQueryOrDefault(ptrRenderTargetElement->FindAttribute("RTVFormat"), &ptrRTVFormats[rtvFormatCount], DXGI_FORMAT_UNKNOWN);
+            Util::XML::QueryOrDefault(ptrRenderTargetElement->FindAttribute("RTVFormat"), &ptrRTVFormats[rtvFormatCount], DXGI_FORMAT_UNKNOWN, s_DXGI_FORMAT_table);
         }
 
         // Increment 

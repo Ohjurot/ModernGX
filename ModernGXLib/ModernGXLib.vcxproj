@@ -116,6 +116,7 @@
     <ClInclude Include="src\ModernGX\Foundation\HRException.h" />
     <ClInclude Include="src\ModernGX\Util\ComPointer.h" />
     <ClInclude Include="src\ModernGX\Util\EasyHWND.h" />
+    <ClInclude Include="src\ModernGX\Util\File.h" />
     <ClInclude Include="src\ModernGX\Util\Hash.h" />
     <ClInclude Include="src\ModernGX\Util\Memory.h" />
     <ClInclude Include="src\ModernGX\Util\StrHashTable.h" />
@@ -144,8 +145,10 @@
     <ClCompile Include="src\ModernGX\Core\GPU\GPUHeap.cpp" />
     <ClCompile Include="src\ModernGX\Core\GPU\GPUQueue.cpp" />
     <ClCompile Include="src\ModernGX\Core\GPU\GPUResource.cpp" />
+    <ClCompile Include="src\ModernGX\Core\Serialisation\SerPipelineState.cpp" />
     <ClCompile Include="src\ModernGX\Core\Serialisation\_internal_SerPipelineState.cpp" />
     <ClCompile Include="src\ModernGX\Foundation\HRException.cpp" />
+    <ClCompile Include="src\ModernGX\Util\File.cpp" />
     <ClCompile Include="src\ModernGX\Util\Hash.cpp" />
     <ClCompile Include="src\ModernGX\Util\Memory.cpp" />
     <ClCompile Include="vendor\tinyxml2\tinyxml2.cpp">

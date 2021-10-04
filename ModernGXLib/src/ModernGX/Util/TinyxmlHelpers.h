@@ -15,11 +15,14 @@
 
 #define __MGX_TINYXML_DECL_XmlQueryOrDefault(type, function) \
 template<> \
-type XmlQueryOrDefault<type>(const tinyxml2::XMLAttribute* ptrAtt, type* ptrDest, type defaultValue) \
+static type QueryOrDefault<type>(const tinyxml2::XMLAttribute* ptrAtt, type* ptrDest, type defaultValue) \
 { \
-    /* Query / Default */ \
-    if (!ptrAtt || ptrAtt->function(ptrDest) != tinyxml2::XMLError::XML_SUCCESS) \
-        *ptrDest = defaultValue; \
+    /* Default */\
+    *ptrDest = defaultValue; \
+\
+    /* Query*/ \
+    if (ptrAtt) \
+        ptrAtt->function(ptrDest);\
 \
     /* Return */ \
     return *ptrDest; \
@@ -27,48 +30,61 @@ type XmlQueryOrDefault<type>(const tinyxml2::XMLAttribute* ptrAtt, type* ptrDest
 
 namespace MGX::Util
 {
-    // Search in str hash table
-    template<typename T>
-    T XmlQueryOrDefault(const tinyxml2::XMLAttribute* ptrAtt, T* ptrDest, T defaultValue, ::MGX::Serialisation::StringHashTable<T>* ptrTable)
+    class XML
     {
-        T value = defaultValue;
-        
-        // Search with attribut text
-        if (ptrAtt)
-        {
-            ::MGX::Serialisation::StringHashTableOps<T>::Search(ptrTable, ptrAtt->Value(), &value);
-        }
+        public:
+            // No OOP 
+            XML() = delete;
+            XML(const XML&) = delete;
+            XML& operator=(const XML&) = delete;
 
-        return value;
-    }
+            // Search in str hash table
+            template<typename T>
+            static T QueryOrDefault(const tinyxml2::XMLAttribute* ptrAtt, T* ptrDest, T defaultValue, ::MGX::Serialisation::StringHashTable<T>* ptrTable)
+            {
+                // Set default
+                *ptrDest = defaultValue;
 
-    // Query or default (no query)
-    template<typename T>
-    T XmlQueryOrDefault(const tinyxml2::XMLAttribute* ptrAtt, T* ptrDest, T defaultValue)
-    {
-        throw std::exception("Template argument not valid. XmlQueryOrDefault() is only avalible for INT32, INT64, UINT32, UINT64, DOUBLE, FLOAT and bool!");
-    }
+                // Search with attribut text
+                if (ptrAtt)
+                {
+                    ::MGX::Serialisation::StringHashTableOps<T>::Search(ptrTable, ptrAtt->Value(), ptrDest);
+                }
 
-    // Implement microsoft (why?) byte type
-    template<>
-    BYTE XmlQueryOrDefault(const tinyxml2::XMLAttribute* ptrAtt, BYTE* ptrDest, BYTE defaultValue)
-    {
-        // Set default
-        UINT32 temp = defaultValue;
-        // Query
-        if (ptrAtt)
-            ptrAtt->QueryUnsignedValue(&temp);
+                return *ptrDest;
+            }
 
-        // Return value
-        return temp <= UINT8_MAX ? (BYTE)temp : defaultValue;
-    }
+            // Query or default (no query)
+            template<typename T>
+            static T QueryOrDefault(const tinyxml2::XMLAttribute* ptrAtt, T* ptrDest, T defaultValue)
+            {
+                throw std::exception("Template argument not valid. XmlQueryOrDefault() is only avalible for INT32, INT64, UINT32, UINT64, DOUBLE, FLOAT and bool!");
+            }
 
-    // Implement functions (strait forward)
-    __MGX_TINYXML_DECL_XmlQueryOrDefault(INT32, QueryIntValue);
-    __MGX_TINYXML_DECL_XmlQueryOrDefault(INT64, QueryInt64Value);
-    __MGX_TINYXML_DECL_XmlQueryOrDefault(UINT32, QueryUnsignedValue);
-    __MGX_TINYXML_DECL_XmlQueryOrDefault(UINT64, QueryUnsigned64Value);
-    __MGX_TINYXML_DECL_XmlQueryOrDefault(DOUBLE, QueryDoubleValue);
-    __MGX_TINYXML_DECL_XmlQueryOrDefault(FLOAT, QueryFloatValue);
-    __MGX_TINYXML_DECL_XmlQueryOrDefault(bool, QueryBoolValue);
+            // Implement microsoft (why?) byte type
+            template<>
+            static BYTE QueryOrDefault(const tinyxml2::XMLAttribute* ptrAtt, BYTE* ptrDest, BYTE defaultValue)
+            {
+                // Set default
+                UINT32 temp = defaultValue;
+                // Query
+                if (ptrAtt)
+                    ptrAtt->QueryUnsignedValue(&temp);
+
+                // Set
+                *ptrDest = temp <= UINT8_MAX ? (BYTE)temp : defaultValue;
+
+                // Return value
+                return *ptrDest;
+            }
+
+            // Implement functions (strait forward)
+            __MGX_TINYXML_DECL_XmlQueryOrDefault(INT32, QueryIntValue);
+            __MGX_TINYXML_DECL_XmlQueryOrDefault(INT64, QueryInt64Value);
+            __MGX_TINYXML_DECL_XmlQueryOrDefault(UINT32, QueryUnsignedValue);
+            __MGX_TINYXML_DECL_XmlQueryOrDefault(UINT64, QueryUnsigned64Value);
+            __MGX_TINYXML_DECL_XmlQueryOrDefault(DOUBLE, QueryDoubleValue);
+            __MGX_TINYXML_DECL_XmlQueryOrDefault(FLOAT, QueryFloatValue);
+            __MGX_TINYXML_DECL_XmlQueryOrDefault(bool, QueryBoolValue);
+    };
 }
