@@ -38,7 +38,7 @@ INT wWinMain_safe(HINSTANCE hInstance, PWSTR cmdArgs, INT cmdShow)
     ID3D12RootSignature* proot;
     ID3D12PipelineState* pstate;
     Core::Serialisation::PipelineState::Init();
-    Core::Serialisation::PipelineState::LoadPipelineStateFromDisk(&proot, &pstate, L"ExamplePipelineGfx.xml");
+    Core::Serialisation::PipelineState::LoadPipelineStateFromDisk(device, &proot, &pstate, L"ExamplePipelineGfx.xml");
 
     
     // END 

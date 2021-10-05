@@ -366,6 +366,9 @@ bool MGX::Core::Serialisation::PipelineState_helpers::DSerGfxPipelineState(D3D12
         // Find and read SampleDesc
         auto ptrSampleDescElement = ptrRootElement->FirstChildElement("SampleDesc");
         DSerSampleDesc(&ptrStateDesc->SampleDesc, ptrSampleDescElement, ptrAllocator);
+
+        // Ok
+        return true;
     }
     
     // Fallback invalid node

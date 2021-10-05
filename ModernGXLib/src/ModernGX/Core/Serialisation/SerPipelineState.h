@@ -2,6 +2,7 @@
 
 #include <ModernGX.h>
 #include <ModernGX/Util/File.h>
+#include <ModernGX/Foundation/HRException.h>
 #include <ModernGX/Core/Allocator/IAllocator.h>
 #include <ModernGX/Core/Allocator/StackMemoryAllocator.h>
 
@@ -19,6 +20,7 @@ namespace MGX::Core::Serialisation
             static void Init() noexcept;
 
             // Load PSO from disk
-            static bool LoadPipelineStateFromDisk(ID3D12RootSignature** ppRootSignature, ID3D12PipelineState** ppPipelineState, const wchar_t* xmlSubFilePath, IAllocator* ptrAllocator = StdAllocator::Instance()) noexcept;
+            static bool LoadPipelineStateFromDisk(ID3D12Device* ptrDevice, ID3D12RootSignature** ppRootSignature, ID3D12PipelineState** ppPipelineState, const wchar_t* xmlSubFilePath, 
+                IAllocator* ptrAllocator = StdAllocator::Instance());
     };
 }
