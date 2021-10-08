@@ -6,6 +6,7 @@
 
 #include <ModernGX.h>
 #include <ModernGX/Util/Memory.h>
+#include <ModernGX/Util/File.h>
 #include <ModernGX/Util/StrHashTable.h>
 #include <ModernGX/Util/TinyxmlHelpers.h>
 #include <ModernGX/Core/Allocator/StackMemoryAllocator.h>
@@ -43,7 +44,7 @@ namespace MGX::Core::Serialisation
 
         private:
             // Load shader
-            static bool DSerLoadShader(D3D12_GRAPHICS_PIPELINE_STATE_DESC* ptrStateDesc, const char* shaderType, const char* shaderPath, Allocator::StackMemoryAllocator* ptrAllocator) noexcept;
+            static bool DSerLoadShader(D3D12_GRAPHICS_PIPELINE_STATE_DESC* ptrStateDesc, const char* shaderType, const char* shaderPath, const wchar_t* folderA, const wchar_t* folderB, Allocator::StackMemoryAllocator* ptrAllocator) noexcept;
             
             // Load D3D12_STREAM_OUTPUT_DESC
             static bool DSerLoadStreamOutput(D3D12_STREAM_OUTPUT_DESC* ptrSODesc, tinyxml2::XMLElement* ptrSOElement, Allocator::StackMemoryAllocator* ptrAllocator) noexcept;

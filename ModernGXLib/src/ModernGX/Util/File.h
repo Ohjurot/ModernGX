@@ -17,10 +17,19 @@ namespace MGX::Util
             // Find one file (helper for many)
             static File Open(const WCHAR* fileName, const WCHAR* directory)
             {
-                // Build file buffer
-                WCHAR buffer[2048];
-                wcscpy_s<2048>(buffer, directory);
-                wcscat_s<2048>(buffer, fileName);
+                // Copy left side
+                WCHAR buffer[4096];
+                wcscpy_s<4096>(buffer, directory);
+
+                // Check if slash is required
+                WCHAR* endCurrent = &buffer[wcslen(buffer) - 1];
+                if (*endCurrent != L'\\' && *endCurrent != L'/' && *fileName != L'\\' && *fileName != L'/')
+                {
+                    wcscat_s<4096>(buffer, L"\\");
+                }
+
+                // Cat right side
+                wcscat_s<4096>(buffer, fileName);
 
                 // File from path
                 return File(buffer);

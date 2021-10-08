@@ -19,12 +19,14 @@
 #include <atomic>
 
 // Include lib generic
-#include <ModernGX/Util/ComPointer.h>
+#include <ModernGX/Util/ComPointer.h> 
+#include <ModernGX/Core/MGXCore.h> 
 
 // MGX Defines
 
 // MGX_INIT_CORE Macro
-#define MGX_INIT_CORE() 
+#define MGX_INIT_CORE() \
+MGX::Core::Init();
 
 // MGX_INIT_DEBUG Macro
 #define MGX_INIT_DEBUG() \
@@ -36,8 +38,8 @@ if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&__mgx_init_debug_ptr)))) { \
 // MGX_INIT() Macro
 #ifdef MGX_DEBUG
 #define MGX_INIT() \
-MGX_INIT_CORE() \
-MGX_INIT_DEBUG() 
+MGX_INIT_DEBUG() \
+MGX_INIT_CORE()
 #else
 #define MGX_INIT() \
 MGX_INIT_CORE()

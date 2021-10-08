@@ -300,6 +300,16 @@ bool MGX::Core::Serialisation::PipelineState_helpers::DSerGfxPipelineState(D3D12
         ptrStateDesc->HS = { 0,0 };
         ptrStateDesc->DS = { 0,0 };
 
+        // Get work dir
+        WCHAR workDir[4096];
+        GetCurrentDirectory(4096, workDir);
+
+        // Get bin dir
+        WCHAR binDir[4096];
+        GetModuleFileName(GetModuleHandle(NULL), binDir, 4096);
+        auto rptr = wcsrchr(binDir, L'\\');
+        if (rptr) *rptr = L'\0';
+            
         // Read all shaders
         for (MGX_TINYXML_FOREACH(ptrRootElement, ptrShaderElement, "Shader"))
         {
@@ -313,7 +323,7 @@ bool MGX::Core::Serialisation::PipelineState_helpers::DSerGfxPipelineState(D3D12
                 // Process shader
                 const char* shaderType = attShaderType->Value();
                 const char* shaderPath = attShaderPath->Value();
-                DSerLoadShader(ptrStateDesc, shaderType, shaderPath, ptrAllocator);
+                DSerLoadShader(ptrStateDesc, shaderType, shaderPath, workDir, binDir, ptrAllocator);
             }
         }
 
@@ -375,7 +385,7 @@ bool MGX::Core::Serialisation::PipelineState_helpers::DSerGfxPipelineState(D3D12
     return false;
 }
 
-bool MGX::Core::Serialisation::PipelineState_helpers::DSerLoadShader(D3D12_GRAPHICS_PIPELINE_STATE_DESC* ptrStateDesc, const char* shaderType, const char* shaderPath, Allocator::StackMemoryAllocator* ptrAllocator) noexcept
+bool MGX::Core::Serialisation::PipelineState_helpers::DSerLoadShader(D3D12_GRAPHICS_PIPELINE_STATE_DESC* ptrStateDesc, const char* shaderType, const char* shaderPath, const wchar_t* folderA, const wchar_t* folderB, Allocator::StackMemoryAllocator* ptrAllocator) noexcept
 {
     bool result = false;
 
@@ -443,12 +453,16 @@ bool MGX::Core::Serialisation::PipelineState_helpers::DSerLoadShader(D3D12_GRAPH
             strcpy_s<4096>(fileName, shaderPath);
             strcat_s<4096>(fileName, ".cso");
 
+            // Convert to wide
+            WCHAR fileNameW[4096];
+            MultiByteToWideChar(CP_UTF8, 0, fileName, -1, fileNameW, 4096);
+
             // Open file
-            HANDLE hFile = CreateFileA(fileName, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
-            if (hFile != INVALID_HANDLE_VALUE)
+            Util::File file = Util::File::Open(fileNameW, folderA, folderB);
+            if (file.Exists() && file.Open())
             {
                 // Get size and allocate buffer
-                DWORD shaderSize = GetFileSize(hFile, nullptr);
+                DWORD shaderSize = file.Size();
                 if (shaderSize)
                 {
                     // Allocate memory
@@ -456,7 +470,7 @@ bool MGX::Core::Serialisation::PipelineState_helpers::DSerLoadShader(D3D12_GRAPH
                     if (shaderMemory)
                     {
                         // Read memory
-                        if (ReadFile(hFile, shaderMemory, shaderSize, 0, NULL))
+                        if (file.Read(shaderMemory, (UINT32)shaderSize))
                         {
                             // Set information
                             ptrBytecodeDesc->BytecodeLength = shaderSize;
@@ -467,8 +481,6 @@ bool MGX::Core::Serialisation::PipelineState_helpers::DSerLoadShader(D3D12_GRAPH
                         }
                     }
                 }
-
-                CloseHandle(hFile);
             }
         }
     }
