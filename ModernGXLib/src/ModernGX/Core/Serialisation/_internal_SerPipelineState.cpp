@@ -449,12 +449,12 @@ bool MGX::Core::Serialisation::PipelineState_helpers::DSerLoadShader(D3D12_GRAPH
             ptrBytecodeDesc->pShaderBytecode = nullptr;
 
             // Build filename
-            CHAR fileName[4096];
-            strcpy_s<4096>(fileName, shaderPath);
-            strcat_s<4096>(fileName, ".cso");
+            CHAR fileName[2048];
+            strcpy_s<2048>(fileName, shaderPath);
+            strcat_s<2048>(fileName, ".cso");
 
             // Convert to wide
-            WCHAR fileNameW[4096];
+            WCHAR fileNameW[2048];
             MultiByteToWideChar(CP_UTF8, 0, fileName, -1, fileNameW, 4096);
 
             // Open file
@@ -883,6 +883,9 @@ bool MGX::Core::Serialisation::PipelineState_helpers::DSerRenderTargets(DXGI_FOR
 
     // Get DSV Format
     Util::XML::QueryOrDefault(ptrRenderTargetsElement->FindAttribute("DSVFormat"), ptrDSVFormat, DXGI_FORMAT_UNKNOWN, s_DXGI_FORMAT_table);
+
+    // Default
+    for (unsigned int i = 0; i < 8; i++) ptrRTVFormats[i] = DXGI_FORMAT_UNKNOWN;
 
     // Get RTV Formats
     unsigned int rtvFormatCount = 0;

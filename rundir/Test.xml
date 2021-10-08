@@ -1,0 +1,69 @@
+<PipelineConfig Type="graphics" Name="Simple solid color">´
+	<Shader Type="VS" Path="shaders/test.vs" />
+	<Shader Type="PS" Path="shaders/test.ps" />
+	
+	<BlendState 
+		AlphaToCoverageEnable="false" 
+		IndependentBlendEnable="false" 
+		SampleMask="FFFFFFFF"
+	>
+		<Blend
+			BlendEnable="true"
+			SrcBlend="D3D12_BLEND_ONE"
+			DestBlend="D3D12_BLEND_ZERO"
+			BlendOp="D3D12_BLEND_OP_ADD"
+			SrcBlendAlpha="D3D12_BLEND_ONE"
+			DestBlendAlpha="D3D12_BLEND_ZERO"
+			BlendOpAlpha="D3D12_BLEND_OP_ADD"
+			
+			LogicOpEnable="false"
+			LogicOp="D3D12_LOGIC_OP_NOOP"
+			
+			RenderTargetWriteMask="RGBA"
+		/>
+	</BlendState>
+	
+	<RasterizerState
+		FillMode="D3D12_FILL_MODE_SOLID"
+		CullMode="D3D12_CULL_MODE_BACK"
+		FrontCounterClockwise="false"
+		DepthBias="0"
+		DepthBiasClamp="0.0"
+		SlopeScaledDepthBias="0.0"
+		DepthClipEnable="true"
+		MultisampleEnable="false"
+		AntialiasedLineEnable="false"
+		ForcedSampleCount="0"
+		ConservativeRaster="D3D12_CONSERVATIVE_RASTERIZATION_MODE_OFF"
+	/>
+	
+	<DepthStencilState
+		DepthEnable="false"
+		DepthWriteMask="D3D12_DEPTH_WRITE_MASK_ALL"
+		DepthFunc="D3D12_COMPARISON_LESS"
+		
+		StencilEnable="false"
+		StencilReadMask="D3D12_DEFAULT_STENCIL_READ_MASK"
+		StencilWriteMask="D3D12_DEFAULT_STENCIL_WRITE_MASK"
+	/>
+	
+	<InputLayout>
+		<InputElement
+			SemanticName="POSITION"
+			SemanticIndex="0"
+			Format="DXGI_FORMAT_R8G8B8A8_UNORM"
+			InputSlot="0"
+			AlignedByteOffset="D3D12_APPEND_ALIGNED_ELEMENT"
+			InputSlotClass="D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA"
+			InstanceDataStepRate="0"
+		/>
+	</InputLayout>
+
+	<PrimitiveTopologyType Value="D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE" />
+	
+	<RenderTargets DSVFormat="DXGI_FORMAT_UNKNOWN">
+		<RenderTarget RTVFormat="DXGI_FORMAT_R8G8B8A8_UNORM" />
+	</RenderTargets>
+	
+	<SampleDesc Count="1" Quality="0" />
+</PipelineConfig>
