@@ -301,12 +301,12 @@ bool MGX::Core::Serialisation::PipelineState_helpers::DSerGfxPipelineState(D3D12
         ptrStateDesc->DS = { 0,0 };
 
         // Get work dir
-        WCHAR workDir[4096];
-        GetCurrentDirectory(4096, workDir);
+        WCHAR workDir[1024];
+        GetCurrentDirectory(1024, workDir);
 
         // Get bin dir
-        WCHAR binDir[4096];
-        GetModuleFileName(GetModuleHandle(NULL), binDir, 4096);
+        WCHAR binDir[1024];
+        GetModuleFileName(GetModuleHandle(NULL), binDir, 1024);
         auto rptr = wcsrchr(binDir, L'\\');
         if (rptr) *rptr = L'\0';
             

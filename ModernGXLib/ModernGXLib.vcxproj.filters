@@ -117,6 +117,9 @@
     <ClInclude Include="src\ModernGX\Core\MGXCore.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\ModernGX\Core\GPU\GPUPipelineState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\ModernGX.cpp">
@@ -195,6 +198,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\ModernGX\Core\MGXCore.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ModernGX\Core\GPU\GPUPipelineState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

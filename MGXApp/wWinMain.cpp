@@ -9,7 +9,7 @@
 #include <ModernGX/Core/GPU/GPUHeap.h>
 #include <ModernGX/Core/GPU/GPUResource.h>
 
-#include <ModernGX/Core/Serialisation/SerPipelineState.h>
+#include <ModernGX/Core/GPU/GPUPipelineState.h>
 // Windows enable visual styles
 #pragma comment(linker,"\"/manifestdependency:type='win32' \
 name='Microsoft.Windows.Common-Controls' version='6.0.0.0' \
@@ -34,11 +34,8 @@ INT wWinMain_safe(HINSTANCE hInstance, PWSTR cmdArgs, INT cmdShow)
     rtvDescHeap.name(L"RTV Descriptor Heap");
 
     // TEST
-    ID3D12RootSignature* proot;
-    ID3D12PipelineState* pstate;
-    Core::Serialisation::PipelineState::LoadPipelineStateFromDisk(device, &proot, &pstate, L"Test.xml");
-
-    
+    Core::GPU::PipelineState state;
+    state = Core::GPU::PipelineState(device, L"Test.xml");
     // END 
 
     // Create window
@@ -63,6 +60,7 @@ INT wWinMain_safe(HINSTANCE hInstance, PWSTR cmdArgs, INT cmdShow)
         list.ClearRenderTarget(wnd.GetRtvCpuHandle(wnd.GetCurrentBufferIndex()));
 
         // TODO: Composition
+        state.Bind(list);
 
         // Set Resource to RTV
         wnd.GetBuffer(wnd.GetCurrentBufferIndex())->SetResourceState(D3D12_RESOURCE_STATE_PRESENT, list.ResourceBarrierPeekAndPush());
