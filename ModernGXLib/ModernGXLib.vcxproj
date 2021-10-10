@@ -111,6 +111,7 @@
     <ClInclude Include="src\ModernGX\Core\GPU\GPUPipelineState.h" />
     <ClInclude Include="src\ModernGX\Core\GPU\GPUQueue.h" />
     <ClInclude Include="src\ModernGX\Core\GPU\GPUResource.h" />
+    <ClInclude Include="src\ModernGX\Core\GPU\GPURootConfiguration.h" />
     <ClInclude Include="src\ModernGX\Core\MGXCore.h" />
     <ClInclude Include="src\ModernGX\Core\Serialisation\SerPipelineState.h" />
     <ClInclude Include="src\ModernGX\Core\Serialisation\_internal_SerPipelineState.h" />
@@ -148,6 +149,7 @@
     <ClCompile Include="src\ModernGX\Core\GPU\GPUPipelineState.cpp" />
     <ClCompile Include="src\ModernGX\Core\GPU\GPUQueue.cpp" />
     <ClCompile Include="src\ModernGX\Core\GPU\GPUResource.cpp" />
+    <ClCompile Include="src\ModernGX\Core\GPU\GPURootConfiguration.cpp" />
     <ClCompile Include="src\ModernGX\Core\MGXCore.cpp" />
     <ClCompile Include="src\ModernGX\Core\Serialisation\SerPipelineState.cpp" />
     <ClCompile Include="src\ModernGX\Core\Serialisation\_internal_SerPipelineState.cpp" />

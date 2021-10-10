@@ -32,7 +32,7 @@ namespace MGX::Core::GPU
             PipelineState(ID3D12Device* ptrDevice, const wchar_t* configFileName, IAllocator* ptrAllocator = StdAllocator::Instance()); // From .xml file
             PipelineState(ID3D12Device* ptrDevice, ID3D12RootSignature* ptrSignature, const D3D12_GRAPHICS_PIPELINE_STATE_DESC* gfxDescription); // For GFX
             PipelineState(ID3D12Device* ptrDevice, ID3D12RootSignature* ptrSignature, const D3D12_COMPUTE_PIPELINE_STATE_DESC* computeDescription); // For Compute
-            PipelineState(ID3D12Device* ptrDevice, const wchar_t* computeShaderFile, IAllocator* ptrAllocator = StdAllocator::Instance()); // For Compute (File)
+            // PipelineState(ID3D12Device* ptrDevice, const wchar_t* computeShaderFile, IAllocator* ptrAllocator = StdAllocator::Instance()); // For Compute (File)
 
             // Get type
             inline PipelineStateType GetType() const noexcept

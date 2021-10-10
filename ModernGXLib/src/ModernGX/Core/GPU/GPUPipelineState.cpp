@@ -37,6 +37,7 @@ MGX::Core::GPU::PipelineState::PipelineState(ID3D12Device* ptrDevice, ID3D12Root
     m_type = PipelineStateType::Compute;
 }
 
+/*
 MGX::Core::GPU::PipelineState::PipelineState(ID3D12Device* ptrDevice, const wchar_t* computeShaderFile, IAllocator* ptrAllocator)
 {
     // Target data
@@ -81,6 +82,7 @@ MGX::Core::GPU::PipelineState::PipelineState(ID3D12Device* ptrDevice, const wcha
         ptrAllocator->Free(ptrTargetBlob);
     }
 }
+*/
 
 void MGX::Core::GPU::PipelineState::Bind(ID3D12GraphicsCommandList* ptrCommandList)
 {
