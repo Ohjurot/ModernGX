@@ -29,8 +29,11 @@ namespace MGX::Core::GPU
     // Defines a root element
     struct RootConfigurationEntry
     {
+        // Construct
+        inline RootConfigurationEntry() {};
+
         // Entity type
-        RootConfigurationEntry_t type;
+        RootConfigurationEntry_t type = RootConfigurationEntry_t::Invalid;
         
         // Data container
         union 
@@ -77,6 +80,43 @@ namespace MGX::Core::GPU
             }
             DescriptorTable;
         };
+
+        // Factory functions
+        inline static RootConfigurationEntry MakeRootConstant(unsigned int num, void* data)
+        {
+            RootConfigurationEntry e;
+            e.type = RootConfigurationEntry_t::RootConstant;
+            e.RootConstant = {num, data};
+            return e;
+        }
+        inline static RootConfigurationEntry MakeConstantBufferView(D3D12_GPU_VIRTUAL_ADDRESS addr)
+        {
+            RootConfigurationEntry e;
+            e.type = RootConfigurationEntry_t::ConstantBufferView;
+            e.ConstantBufferView.dataAddress = addr;
+            return e;
+        }
+        inline static RootConfigurationEntry MakeShaderResourceView(D3D12_GPU_VIRTUAL_ADDRESS addr)
+        {
+            RootConfigurationEntry e;
+            e.type = RootConfigurationEntry_t::ShaderResourceView;
+            e.ShaderResourceView.dataAddress = addr;
+            return e;
+        }
+        inline static RootConfigurationEntry MakeUnorderedAccessView(D3D12_GPU_VIRTUAL_ADDRESS addr)
+        {
+            RootConfigurationEntry e;
+            e.type = RootConfigurationEntry_t::UnorderedAccessView;
+            e.UnorderedAccessView.dataAddress = addr;
+            return e;
+        }
+        inline static RootConfigurationEntry MakeDescriptorTable(D3D12_GPU_DESCRIPTOR_HANDLE handle)
+        {
+            RootConfigurationEntry e;
+            e.type = RootConfigurationEntry_t::DescriptorTable;
+            e.DescriptorTable.baseDescriptor = handle;
+            return e;
+        }
     };
 
     // Root signature configuration

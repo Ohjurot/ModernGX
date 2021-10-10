@@ -10,6 +10,8 @@
 #include <ModernGX/Core/GPU/GPUResource.h>
 
 #include <ModernGX/Core/GPU/GPUPipelineState.h>
+#include <ModernGX/Core/GPU/GPURootConfiguration.h>
+
 // Windows enable visual styles
 #pragma comment(linker,"\"/manifestdependency:type='win32' \
 name='Microsoft.Windows.Common-Controls' version='6.0.0.0' \
@@ -34,8 +36,11 @@ INT wWinMain_safe(HINSTANCE hInstance, PWSTR cmdArgs, INT cmdShow)
     rtvDescHeap.name(L"RTV Descriptor Heap");
 
     // TEST
-    Core::GPU::PipelineState state;
-    state = Core::GPU::PipelineState(device, L"Test.xml");
+    UINT32 buffer[4] = { 0, 16, 32, 64 };
+    Core::GPU::PipelineState state(device, L"Test.xml");
+    Core::GPU::RootConfiguration rConf(state.GetType(),
+        Core::GPU::RootConfigurationEntry::MakeRootConstant(4, buffer)
+    );
     // END 
 
     // Create window
@@ -61,6 +66,7 @@ INT wWinMain_safe(HINSTANCE hInstance, PWSTR cmdArgs, INT cmdShow)
 
         // TODO: Composition
         state.Bind(list);
+        rConf.Bind(list);
 
         // Set Resource to RTV
         wnd.GetBuffer(wnd.GetCurrentBufferIndex())->SetResourceState(D3D12_RESOURCE_STATE_PRESENT, list.ResourceBarrierPeekAndPush());
