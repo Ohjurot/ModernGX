@@ -39,6 +39,18 @@ namespace MGX::Core {
                 return m_bufferCount;
             }
 
+            // Get width
+            inline UINT GetWidth() const noexcept
+            {
+                return m_width;
+            }
+
+            // Get height
+            inline UINT GetHeight() const noexcept
+            {
+                return m_height;
+            }
+
             // Rtv Handle
             D3D12_CPU_DESCRIPTOR_HANDLE GetRtvCpuHandle(unsigned int idx) noexcept;
 
@@ -56,7 +68,7 @@ namespace MGX::Core {
             static EasyHWND::WindowClass s_wndCls;
 
             // Swap chain pointer
-            ComPointer<IDXGISwapChain1> m_ptrSwapChain;
+            ComPointer<IDXGISwapChain3> m_ptrSwapChain;
 
             // Buffers
             GPU::Resource m_ptrBuffers[3];

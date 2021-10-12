@@ -49,6 +49,12 @@ namespace MGX::Core::GPU
                 return m_typeOfResource;
             }
 
+            // Retrive usage of resource (Buffer "location")
+            inline HeapUsage GetUsage() const noexcept
+            {
+                return m_usage;
+            }
+
             // Retrive state
             inline D3D12_RESOURCE_STATES GetResourceState() const noexcept
             {
@@ -66,8 +72,9 @@ namespace MGX::Core::GPU
             }
 
         private:
-            // Type of resource
+            // Type of resource and residence
             ResourceType m_typeOfResource = ResourceType::Committed;
+            HeapUsage m_usage = HeapUsage::Default;
 
             // Resource state
             D3D12_RESOURCE_STATES m_currentState = D3D12_RESOURCE_STATE_COMMON;

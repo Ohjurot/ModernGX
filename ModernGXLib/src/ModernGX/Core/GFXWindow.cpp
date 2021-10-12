@@ -90,7 +90,14 @@ MGX::Core::Window::Window(LPCWSTR title, ID3D12Device* ptrDevice, ID3D12CommandQ
     fd.RefreshRate.Denominator = 1;
 
     // Create swap chain
-    MGX_EVALUATE_HRESULT("IDXGIFactory2->CreateSwapChainForHwnd(...)", ptrFactory->CreateSwapChainForHwnd(ptrCommandQueue, this->operator HWND(), &sd, &fd, NULL, &m_ptrSwapChain));
+    ComPointer<IDXGISwapChain1> ptrSwapTemp;
+    MGX_EVALUATE_HRESULT("IDXGIFactory2->CreateSwapChainForHwnd(...)", ptrFactory->CreateSwapChainForHwnd(ptrCommandQueue, this->operator HWND(), &sd, &fd, NULL, &ptrSwapTemp));
+
+    // Query for SC3
+    if (!ptrSwapTemp.queryInterface(m_ptrSwapChain))
+    {
+        throw std::exception("Your system does not support IDXGISwapChain3");
+    }
 
     // Get buffers
     __getBuffers(ptrDevice);
@@ -137,6 +144,7 @@ void MGX::Core::Window::ResizeNow(ID3D12Device* ptrDevice) noexcept
 
         // Resize swap chain
         m_ptrSwapChain->ResizeBuffers(GetBufferCount(), m_width, m_height, DXGI_FORMAT_UNKNOWN, DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH);
+        m_bufferIndex = m_ptrSwapChain->GetCurrentBackBufferIndex();
 
         // Resizing done
         m_needsResize = false;
@@ -149,7 +157,7 @@ void MGX::Core::Window::ResizeNow(ID3D12Device* ptrDevice) noexcept
 void MGX::Core::Window::Present(bool vsync) noexcept 
 {
     m_ptrSwapChain->Present(vsync ? 1 : 0, NULL);
-    m_bufferIndex = (m_bufferIndex + 1) % GetBufferCount();
+    m_bufferIndex = m_ptrSwapChain->GetCurrentBackBufferIndex();
 }
 
 unsigned int MGX::Core::Window::GetCurrentBufferIndex() noexcept 

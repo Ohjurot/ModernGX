@@ -8,7 +8,8 @@ MGX::Core::GPU::Resource::Resource(ID3D12Resource* ptrResource, D3D12_RESOURCE_S
 }
 
 MGX::Core::GPU::Resource::Resource(ID3D12Device* ptrDevice, HeapUsage usage, const D3D12_RESOURCE_DESC* ptrDesc, D3D12_RESOURCE_STATES initialState, const D3D12_CLEAR_VALUE* ptrClearValue, D3D12_HEAP_FLAGS heapFlags) :
-    m_typeOfResource(ResourceType::Committed)
+    m_typeOfResource(ResourceType::Committed),
+    m_usage(usage)
 {
     // Describe heap
     D3D12_HEAP_PROPERTIES prop = {};
@@ -23,13 +24,15 @@ MGX::Core::GPU::Resource::Resource(ID3D12Device* ptrDevice, HeapUsage usage, con
 }
 
 MGX::Core::GPU::Resource::Resource(ID3D12Device* ptrDevice, const D3D12_RESOURCE_DESC* ptrDesc, HeapAllocationCookie allocationCookie, D3D12_RESOURCE_STATES initialState, const D3D12_CLEAR_VALUE* ptrClearValue) :
-    m_typeOfResource(ResourceType::Placed)
+    m_typeOfResource(ResourceType::Placed),
+    m_usage(allocationCookie.usage)
 {
     MGX_EVALUATE_HRESULT("ID3D12Device->CreatePlacedResource(...)", ptrDevice->CreatePlacedResource(allocationCookie.ptrHeap, allocationCookie.offset, ptrDesc, initialState, ptrClearValue, IID_PPV_ARGS(&m_ptrBase)));
 }
 
 MGX::Core::GPU::Resource::Resource(ID3D12Device* ptrDevice, const D3D12_RESOURCE_DESC* ptrDesc, D3D12_RESOURCE_STATES initialState, const D3D12_CLEAR_VALUE* ptrClearValue) :
-    m_typeOfResource(ResourceType::Reserved)
+    m_typeOfResource(ResourceType::Reserved),
+    m_usage(HeapUsage::Default)
 {
     MGX_EVALUATE_HRESULT("ID3D12Device->CreateReservedResource(...)", ptrDevice->CreateReservedResource(ptrDesc, initialState, ptrClearValue, IID_PPV_ARGS(&m_ptrBase)));
 }

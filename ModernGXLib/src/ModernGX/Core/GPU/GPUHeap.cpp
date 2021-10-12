@@ -1,7 +1,8 @@
 #include "ModernGX.h"
 #include "GPUHeap.h"
 
-MGX::Core::GPU::Heap::Heap(ID3D12Device* ptrDevice, UINT64 size, HeapUsage usage, UINT64 allignment, D3D12_HEAP_FLAGS flags, IAllocator* ptrBaseAllocator)
+MGX::Core::GPU::Heap::Heap(ID3D12Device* ptrDevice, UINT64 size, HeapUsage usage, UINT64 allignment, D3D12_HEAP_FLAGS flags, IAllocator* ptrBaseAllocator) :
+    m_usage(usage)
 {
     // Heap accelerator
     UINT32 slotCount = (UINT32)( (size + D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT - 1) / D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT);
@@ -41,6 +42,7 @@ MGX::Core::GPU::Heap& MGX::Core::GPU::Heap::operator=(Heap&& other) noexcept
 
     // Copy
     m_ptrHeap = other.m_ptrHeap;
+    m_usage = other.m_usage;
 
     // Invalidate
     other.m_ptrHeap = nullptr;
@@ -60,6 +62,7 @@ bool MGX::Core::GPU::Heap::Allocate(HeapAllocationCookie* ptrCookie) noexcept
         // Set other members
         ptrCookie->offset = D3D12_DEFAULT_RESOURCE_PLACEMENT_ALIGNMENT * slotOffset;
         ptrCookie->ptrHeap = m_ptrHeap;
+        ptrCookie->usage = m_usage;
 
         // Succeeded
         return true;

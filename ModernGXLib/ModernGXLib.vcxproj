@@ -103,6 +103,7 @@
     <ClInclude Include="src\ModernGX\Core\Concurrent\LockGuard.h" />
     <ClInclude Include="src\ModernGX\Core\Concurrent\SpinLock.h" />
     <ClInclude Include="src\ModernGX\Core\GFXWindow.h" />
+    <ClInclude Include="src\ModernGX\Core\GPUTypes\GTypeBuffer.h" />
     <ClInclude Include="src\ModernGX\Core\GPU\GPUCommandList.h" />
     <ClInclude Include="src\ModernGX\Core\GPU\GPUDescriptorHeap.h" />
     <ClInclude Include="src\ModernGX\Core\GPU\GPUDevice.h" />
@@ -142,6 +143,7 @@
     <ClCompile Include="src\ModernGX\Core\Concurrent\LockGuard.cpp" />
     <ClCompile Include="src\ModernGX\Core\Concurrent\SpinLock.cpp" />
     <ClCompile Include="src\ModernGX\Core\GFXWindow.cpp" />
+    <ClCompile Include="src\ModernGX\Core\GPUTypes\GTypeBuffer.cpp" />
     <ClCompile Include="src\ModernGX\Core\GPU\GPUCommandList.cpp" />
     <ClCompile Include="src\ModernGX\Core\GPU\GPUDescriptorHeap.cpp" />
     <ClCompile Include="src\ModernGX\Core\GPU\GPUDevice.cpp" />

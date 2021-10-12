@@ -12,12 +12,19 @@
 #include <ModernGX/Core/GPU/GPUPipelineState.h>
 #include <ModernGX/Core/GPU/GPURootConfiguration.h>
 
+#include <ModernGX/Core/GPUTypes/GTypeBuffer.h>
+
 // Windows enable visual styles
 #pragma comment(linker,"\"/manifestdependency:type='win32' \
 name='Microsoft.Windows.Common-Controls' version='6.0.0.0' \
 processorArchitecture='*' publicKeyToken='6595b64144ccf1df' language='*'\"")
 
 using namespace MGX;
+
+struct Vertex
+{
+    float x, y, z, w;
+};
 
 INT wWinMain_safe(HINSTANCE hInstance, PWSTR cmdArgs, INT cmdShow) 
 {
@@ -36,11 +43,38 @@ INT wWinMain_safe(HINSTANCE hInstance, PWSTR cmdArgs, INT cmdShow)
     rtvDescHeap.name(L"RTV Descriptor Heap");
 
     // TEST
-    UINT32 buffer[4] = { 0, 16, 32, 64 };
+    float buffer[4] = { 0.0f, 0.0f, 1.0f, 1.0f };
     Core::GPU::PipelineState state(device, L"Test.xml");
     Core::GPU::RootConfiguration rConf(state.GetType(),
         Core::GPU::RootConfigurationEntry::MakeRootConstant(4, buffer)
     );
+
+    Core::GType::Buffer vertexBuffer(device, Core::GPU::HeapUsage::Default, 64 * sizeof(Vertex));
+    vertexBuffer.name(L"Vertex Buffer");
+    Core::GType::Buffer vertexBufferUpl(device, Core::GPU::HeapUsage::Upload, 64 * sizeof(Vertex));
+    vertexBufferUpl.name(L"Vertex Upload Buffer");
+
+    Vertex vtxs[] = {
+        {-0.5f, -0.5f, 0.0f, 1.0f},
+        {-0.5f,  0.5f, 0.0f, 1.0f},
+        { 0.5f, -0.5f, 0.0f, 1.0f},
+        { 0.5f,  0.5f, 0.0f, 1.0f},
+    };
+
+    auto mapped = vertexBufferUpl.Map();
+    mapped.CopyToT<Vertex>(vtxs, __crt_countof(vtxs));
+    mapped.Unmap();
+
+    vertexBuffer.SetResourceState(D3D12_RESOURCE_STATE_COPY_DEST, list.ResourceBarrierPeekAndPush());
+    vertexBufferUpl.SetResourceState(D3D12_RESOURCE_STATE_COPY_SOURCE, list.ResourceBarrierPeekAndPush());
+    list.ResourceBarrierFlush();
+
+    list->CopyBufferRegion(vertexBuffer, 0, vertexBufferUpl, 0, vertexBuffer.Size());
+    vertexBuffer.SetResourceState(D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, list.ResourceBarrierPeekAndPush());
+    list.Close();
+    queue.Wait(queue.Execute(list));
+    list.Reset();
+
     // END 
 
     // Create window
@@ -68,7 +102,25 @@ INT wWinMain_safe(HINSTANCE hInstance, PWSTR cmdArgs, INT cmdShow)
         state.Bind(list);
         rConf.Bind(list);
 
-        // Set Resource to RTV
+        auto handle = wnd.GetRtvCpuHandle(wnd.GetCurrentBufferIndex());
+        list->OMSetRenderTargets(1, &handle, false, nullptr);
+
+        RECT sicRect = { 0, 0, wnd.GetWidth(), wnd.GetHeight() };
+        list->RSSetScissorRects(1, &sicRect);
+
+        D3D12_VIEWPORT vp = {0, 0, wnd.GetWidth(), wnd.GetHeight(), 0.0f, 1.0f};
+        list->RSSetViewports(1, &vp);
+
+        D3D12_VERTEX_BUFFER_VIEW vbv;
+        vbv.SizeInBytes = sizeof(Vertex) * __crt_countof(vtxs);
+        vbv.StrideInBytes = sizeof(Vertex);
+        vbv.BufferLocation = vertexBuffer[0];
+        list->IASetVertexBuffers(0, 1, &vbv);
+        list->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+        
+        list->DrawInstanced(4, 1, 0, 0);
+
+        // Set Resource to Present
         wnd.GetBuffer(wnd.GetCurrentBufferIndex())->SetResourceState(D3D12_RESOURCE_STATE_PRESENT, list.ResourceBarrierPeekAndPush());
         
         // === Execute and Present ===

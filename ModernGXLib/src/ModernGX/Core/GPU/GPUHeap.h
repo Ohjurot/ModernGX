@@ -8,19 +8,6 @@
 
 namespace MGX::Core::GPU 
 {
-    // Heap location
-    enum class HeapUsage
-    {
-        // Default heap (GPU Work Memory)
-        Default = D3D12_HEAP_TYPE_DEFAULT,
-
-        // Upload heap (CPU Write --> GPU Read)
-        Upload = D3D12_HEAP_TYPE_UPLOAD,
-
-        // Download heap (GPU Write --> CPU Read)
-        Download = D3D12_HEAP_TYPE_READBACK,
-    };
-
     // GPU Memory heap
     class Heap
     {
@@ -36,6 +23,12 @@ namespace MGX::Core::GPU
             // Move
             Heap& operator=(Heap&& other) noexcept;
 
+            // Get usage
+            HeapUsage GetUsage() const noexcept
+            {
+                return m_usage;
+            }
+
             // Allocate cookie on heap
             bool Allocate(HeapAllocationCookie* ptrCookie) noexcept;
             // Free cookie on heap
@@ -44,6 +37,9 @@ namespace MGX::Core::GPU
         private:
             // Heap accelerator
             Allocator::ListMemoryAccelerator m_ac;
+
+            // Usage of heap
+            HeapUsage m_usage;
 
             // DirectX Heap object
             ComPointer<ID3D12Heap> m_ptrHeap;
