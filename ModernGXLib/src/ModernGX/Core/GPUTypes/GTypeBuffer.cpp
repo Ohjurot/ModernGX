@@ -143,6 +143,8 @@ MGX::Core::GType::Buffer& MGX::Core::GType::Buffer::operator=(Buffer&& other) no
     other.m_ptrBase = nullptr;
     other.m_bufferSize = 0;
     other.m_baseAddress = 0;
+
+    return *this;
 }
 
 MGX::Core::GType::MappedBuffer MGX::Core::GType::Buffer::Map(UINT64 size, UINT64 offset)
@@ -155,7 +157,7 @@ MGX::Core::GType::MappedBuffer MGX::Core::GType::Buffer::Map(UINT64 size, UINT64
     return MappedBuffer(m_ptrBase, size, offset);
 }
 
-bool MGX::Core::GType::Buffer::CreateCBV(ID3D12Device* ptrDevice, D3D12_CPU_DESCRIPTOR_HANDLE handle, UINT64 size, UINT64 offset)
+bool MGX::Core::GType::Buffer::CreateCBV(ID3D12Device* ptrDevice, D3D12_CPU_DESCRIPTOR_HANDLE handle, UINT size, UINT64 offset)
 {
     bool canCreateView = offset + size < m_bufferSize;
 
@@ -168,6 +170,58 @@ bool MGX::Core::GType::Buffer::CreateCBV(ID3D12Device* ptrDevice, D3D12_CPU_DESC
 
         // Create SRV
         ptrDevice->CreateConstantBufferView(&cvd, handle);
+    }
+
+    return canCreateView;
+}
+
+bool MGX::Core::GType::Buffer::CreateSRV(ID3D12Device* ptrDevice, D3D12_CPU_DESCRIPTOR_HANDLE handle, UINT stride, UINT count, UINT64 offset, bool raw)
+{
+    bool canCreateView = offset + stride * count < m_bufferSize;
+
+    if (canCreateView)
+    {
+        // Describe SRV
+        D3D12_SHADER_RESOURCE_VIEW_DESC rvd = {};
+        rvd.Format = DXGI_FORMAT_UNKNOWN;
+        rvd.ViewDimension = D3D12_SRV_DIMENSION_BUFFER;
+        rvd.Buffer.FirstElement = offset;
+        rvd.Buffer.NumElements = count;
+        rvd.Buffer.StructureByteStride = stride;
+        rvd.Buffer.Flags = raw ? D3D12_BUFFER_SRV_FLAG_RAW : D3D12_BUFFER_SRV_FLAG_NONE;
+
+        // Create view
+        ptrDevice->CreateShaderResourceView(m_ptrBase, &rvd, handle);
+    }
+
+    return canCreateView;
+}
+
+bool MGX::Core::GType::Buffer::CreateVBV(D3D12_VERTEX_BUFFER_VIEW* ptrView, UINT stride, UINT count, UINT64 offset)
+{
+    bool canCreateView = offset + stride * count < m_bufferSize;
+
+    if (canCreateView)
+    {
+        // Describe in given descriptor
+        ptrView->BufferLocation = this->operator[](offset);
+        ptrView->SizeInBytes = stride * count;
+        ptrView->StrideInBytes = stride;
+    }
+
+    return canCreateView;
+}
+
+bool MGX::Core::GType::Buffer::CreateIBV(D3D12_INDEX_BUFFER_VIEW* ptrView, UINT indexCount, UINT64 offset, UINT indexByteSize)
+{
+    bool canCreateView = offset + indexByteSize * indexCount < m_bufferSize && (indexByteSize == 2 || indexByteSize == 4);
+
+    if (canCreateView)
+    {
+        // Describe view
+        ptrView->BufferLocation = this->operator[](offset);
+        ptrView->SizeInBytes = indexByteSize * indexCount;
+        ptrView->Format = indexByteSize == 4 ? DXGI_FORMAT_R32_UINT : DXGI_FORMAT_R16_UINT;
     }
 
     return canCreateView;

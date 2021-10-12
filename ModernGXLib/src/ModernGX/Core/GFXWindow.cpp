@@ -175,6 +175,34 @@ D3D12_CPU_DESCRIPTOR_HANDLE MGX::Core::Window::GetRtvCpuHandle(unsigned int idx)
     return idx < GetBufferCount() ? m_rtvRange[idx].cpu : D3D12_CPU_DESCRIPTOR_HANDLE({ 0 });
 }
 
+D3D12_VIEWPORT MGX::Core::Window::GetViewport(float minDepth, float maxDepth, UINT left, UINT top, UINT width, UINT height) const noexcept
+{
+    // Safly build viewport
+    D3D12_VIEWPORT vp;
+    vp.TopLeftX = std::min<FLOAT>((FLOAT)left, (FLOAT)m_width);
+    vp.TopLeftY = std::min<FLOAT>((FLOAT)top, (FLOAT)m_width);
+    vp.Width = std::min<FLOAT>((FLOAT)width, (FLOAT)m_width - vp.TopLeftX);
+    vp.Height = std::min<FLOAT>((FLOAT)height, (FLOAT)m_height - vp.TopLeftY);
+    vp.MinDepth = minDepth;
+    vp.MaxDepth = maxDepth;
+
+    // Return viewport
+    return vp;
+}
+
+RECT MGX::Core::Window::GetScissorRect(UINT top, UINT left, UINT width, UINT height) const noexcept
+{
+    // Safly build scissor rect
+    RECT sicRect;
+    sicRect.top = std::min<LONG>((LONG)top, (LONG)m_height);
+    sicRect.left = std::min<LONG>((LONG)left, (LONG)m_width);
+    sicRect.right = sicRect.left + (LONG)std::min<UINT>(width, m_width - sicRect.left);
+    sicRect.bottom = sicRect.top + (LONG)std::min<UINT>(height, m_height - sicRect.top);
+
+    // Return rect
+    return sicRect;
+}
+
 void MGX::Core::Window::__getBuffers(ID3D12Device* ptrDevice)
 {
     // Get each buffer

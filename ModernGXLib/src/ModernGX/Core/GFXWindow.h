@@ -54,6 +54,10 @@ namespace MGX::Core {
             // Rtv Handle
             D3D12_CPU_DESCRIPTOR_HANDLE GetRtvCpuHandle(unsigned int idx) noexcept;
 
+            // Vieport function
+            D3D12_VIEWPORT GetViewport(float minDepth = 1.0f, float maxDepth = 0.0f, UINT left = 0, UINT top = 0, UINT width = UINT_MAX, UINT height = UINT_MAX) const noexcept;
+            RECT GetScissorRect(UINT top = 0, UINT left = 0, UINT width = UINT_MAX, UINT height = UINT_MAX) const noexcept;
+
         private:
             // Buffer release and construct
             void __getBuffers(ID3D12Device* ptrDevice);

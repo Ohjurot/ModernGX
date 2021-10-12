@@ -31,16 +31,16 @@ namespace MGX::Core::GType
 
             // Template copy to
             template<typename T>
-            inline bool CopyToT(const T* ptrSource, UINT count, UINT64 offset = 0)
+            inline bool TCopyTo(const T* ptrSource, UINT count, UINT64 byteOffset = 0)
             {
-                return CopyTo(ptrSource, count * sizeof(T), offset);
+                return CopyTo(ptrSource, count * sizeof(T), byteOffset);
             }
 
             // Template copy from
             template<typename T>
-            inline bool CopyFromT(T* ptrDest, UINT count, UINT64 offset = 0)
+            inline bool TCopyFrom(T* ptrDest, UINT count, UINT64 byteOffset = 0)
             {
-                return CopyFrom(ptrDest, count * sizeof(T), offset);
+                return CopyFrom(ptrDest, count * sizeof(T), byteOffset);
             }
 
             // No assign
@@ -109,13 +109,39 @@ namespace MGX::Core::GType
             // Mapping functions
             MappedBuffer Map(UINT64 size = UINT64_MAX, UINT64 offset = 0);
 
-            // Create CBV
-            bool CreateCBV(ID3D12Device* ptrDevice, D3D12_CPU_DESCRIPTOR_HANDLE handle, UINT64 size = UINT64_MAX, UINT64 offset = 0);
+            // Create Views
+            bool CreateCBV(ID3D12Device* ptrDevice, D3D12_CPU_DESCRIPTOR_HANDLE handle, UINT size = UINT_MAX, UINT64 offset = 0);
+            bool CreateSRV(ID3D12Device* ptrDevice, D3D12_CPU_DESCRIPTOR_HANDLE handle, UINT stride, UINT count = UINT_MAX, UINT64 offset = 0, bool raw = false);
+            bool CreateVBV(D3D12_VERTEX_BUFFER_VIEW* ptrView, UINT stride, UINT count, UINT64 offset = 0);
+            bool CreateIBV(D3D12_INDEX_BUFFER_VIEW* ptrView, UINT indexCount, UINT64 offset = 0, UINT indexByteSize = 4);
 
-            // Helper for CBV pairs
-            inline bool CreateCBV(ID3D12Device* ptrDevice, GPU::DescriptorPair pair, UINT64 size = UINT64_MAX, UINT64 offset = 0)
+            // Helper for view cration with pairs
+            inline bool CreateCBV(ID3D12Device* ptrDevice, GPU::DescriptorPair pair, UINT size = UINT_MAX, UINT64 offset = 0)
             {
                 return CreateCBV(ptrDevice, pair.cpu, size, offset);
+            }
+            inline bool CreateSRV(ID3D12Device* ptrDevice, GPU::DescriptorPair pair, UINT stride, UINT count = UINT_MAX, UINT64 offset = 0, bool raw = false)
+            {
+                return CreateSRV(ptrDevice, pair.cpu, stride, count, offset, raw);
+            }
+
+            // Templated SRV
+            template<typename T>
+            inline bool CreateSRV(ID3D12Device* ptrDevice, D3D12_CPU_DESCRIPTOR_HANDLE handle, UINT count = UINT_MAX, UINT64 byteOffset = 0, bool raw = false)
+            {
+                return CreateSRV(ptrDevice, handle, sizeof(T), count, byteOffset, raw);
+            }
+            template<typename T>
+            inline bool CreateSRV(ID3D12Device* ptrDevice, GPU::DescriptorPair pair, UINT count = UINT_MAX, UINT64 byteOffset = 0, bool raw = false)
+            {
+                return CreateSRV(ptrDevice, pair, sizeof(T), count, byteOffset, raw);
+            }
+
+            // Template VBV
+            template<typename T>
+            inline bool CreateVBV(D3D12_VERTEX_BUFFER_VIEW* ptrView, UINT count, UINT byteOffset = 0)
+            {
+                return CreateVBV(ptrView, sizeof(T), count, byteOffset);
             }
 
             // Get size of bufer

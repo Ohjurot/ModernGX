@@ -43,17 +43,19 @@ INT wWinMain_safe(HINSTANCE hInstance, PWSTR cmdArgs, INT cmdShow)
     rtvDescHeap.name(L"RTV Descriptor Heap");
 
     // TEST
-    float buffer[4] = { 0.0f, 0.0f, 1.0f, 1.0f };
+    float buffer[4] = { 0.1f, 0.05f, 0.85f, 1.0f };
     Core::GPU::PipelineState state(device, L"Test.xml");
     Core::GPU::RootConfiguration rConf(state.GetType(),
         Core::GPU::RootConfigurationEntry::MakeRootConstant(4, buffer)
     );
 
+    // Vertex buffer (incl. upload buffer)
     Core::GType::Buffer vertexBuffer(device, Core::GPU::HeapUsage::Default, 64 * sizeof(Vertex));
     vertexBuffer.name(L"Vertex Buffer");
     Core::GType::Buffer vertexBufferUpl(device, Core::GPU::HeapUsage::Upload, 64 * sizeof(Vertex));
     vertexBufferUpl.name(L"Vertex Upload Buffer");
 
+    // CPU Load buffer
     Vertex vtxs[] = {
         {-0.5f, -0.5f, 0.0f, 1.0f},
         {-0.5f,  0.5f, 0.0f, 1.0f},
@@ -61,8 +63,13 @@ INT wWinMain_safe(HINSTANCE hInstance, PWSTR cmdArgs, INT cmdShow)
         { 0.5f,  0.5f, 0.0f, 1.0f},
     };
 
+    // View
+    D3D12_VERTEX_BUFFER_VIEW vbv;
+    vertexBuffer.CreateVBV<Vertex>(&vbv, __crt_countof(vtxs));
+
+    // Copy to gpu
     auto mapped = vertexBufferUpl.Map();
-    mapped.CopyToT<Vertex>(vtxs, __crt_countof(vtxs));
+    mapped.TCopyTo<Vertex>(vtxs, __crt_countof(vtxs));
     mapped.Unmap();
 
     vertexBuffer.SetResourceState(D3D12_RESOURCE_STATE_COPY_DEST, list.ResourceBarrierPeekAndPush());
@@ -78,7 +85,9 @@ INT wWinMain_safe(HINSTANCE hInstance, PWSTR cmdArgs, INT cmdShow)
     // END 
 
     // Create window
-    Core::Window wnd(L"My Window", device, queue, rtvDescHeap.Allocate(3));
+    Core::Window wnd(L"My Window", device, queue, rtvDescHeap.Allocate(3), true, true);
+    D3D12_VIEWPORT windowViewport = wnd.GetViewport();
+    RECT windowRect = wnd.GetScissorRect();
 
     // Prcoess window events
     while (wnd.ProcessWindowEvents()) {
@@ -86,6 +95,8 @@ INT wWinMain_safe(HINSTANCE hInstance, PWSTR cmdArgs, INT cmdShow)
         if (wnd.NeedsResizing()) {
             queue.Flush(wnd.GetBufferCount());
             wnd.ResizeNow(device);
+            windowViewport = wnd.GetViewport();
+            windowRect = wnd.GetScissorRect();
         }
 
         // === Rendering ===
@@ -95,29 +106,25 @@ INT wWinMain_safe(HINSTANCE hInstance, PWSTR cmdArgs, INT cmdShow)
         
         // Set Resource to RTV
         wnd.GetBuffer(wnd.GetCurrentBufferIndex())->SetResourceState(D3D12_RESOURCE_STATE_RENDER_TARGET, list.ResourceBarrierPeekAndPush());
-        // Clear RT
-        list.ClearRenderTarget(wnd.GetRtvCpuHandle(wnd.GetCurrentBufferIndex()));
+        
+        // Clear and setup RT
+        auto handle = wnd.GetRtvCpuHandle(wnd.GetCurrentBufferIndex());
+        list.ClearRenderTarget(handle);
+        list->OMSetRenderTargets(1, &handle, false, nullptr);
 
-        // TODO: Composition
+        // Bind pipeline state
         state.Bind(list);
         rConf.Bind(list);
 
-        auto handle = wnd.GetRtvCpuHandle(wnd.GetCurrentBufferIndex());
-        list->OMSetRenderTargets(1, &handle, false, nullptr);
+        // Bind rasterizer
+        list->RSSetScissorRects(1, &windowRect);
+        list->RSSetViewports(1, &windowViewport);
 
-        RECT sicRect = { 0, 0, wnd.GetWidth(), wnd.GetHeight() };
-        list->RSSetScissorRects(1, &sicRect);
-
-        D3D12_VIEWPORT vp = {0, 0, wnd.GetWidth(), wnd.GetHeight(), 0.0f, 1.0f};
-        list->RSSetViewports(1, &vp);
-
-        D3D12_VERTEX_BUFFER_VIEW vbv;
-        vbv.SizeInBytes = sizeof(Vertex) * __crt_countof(vtxs);
-        vbv.StrideInBytes = sizeof(Vertex);
-        vbv.BufferLocation = vertexBuffer[0];
+        // Bind vertex buffer
         list->IASetVertexBuffers(0, 1, &vbv);
         list->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
         
+        // Draw
         list->DrawInstanced(4, 1, 0, 0);
 
         // Set Resource to Present
@@ -127,7 +134,7 @@ INT wWinMain_safe(HINSTANCE hInstance, PWSTR cmdArgs, INT cmdShow)
         list.Close();
         queue.Wait(queue.Execute(list));
         list.Reset();
-        wnd.Present();
+        wnd.Present(true);
     }
 
     // Flush Queue
