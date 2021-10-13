@@ -3,6 +3,7 @@
 #include <ModernGX.h>
 #include <ModernGX/Core/GPU/GPUHeap.h>
 #include <ModernGX/Core/GPU/GPUResource.h>
+#include <ModernGX/Core/GPU/GPUCommandList.h>
 #include <ModernGX/Core/GPU/GPUDescriptorHeap.h>
 
 #include <exception>
@@ -24,23 +25,23 @@ namespace MGX::Core::GType
             // Unmap this resource
             void Unmap();
 
-            // Copy TO this buffer
-            bool CopyTo(const void* ptrSource, UINT64 size, UINT64 offset = 0);
-            // Copy FROM this buffer
-            bool CopyFrom(void* ptrDest, UINT64 size, UINT64 offset = 0);
+            // Copy from OTHER buffer
+            bool CopyFrom(const void* ptrSource, UINT64 size, UINT64 offset = 0);
+            // Copy to OTHER buffer
+            bool CopyTo(void* ptrDest, UINT64 size, UINT64 offset = 0);
 
-            // Template copy to
+            // Template copy from
             template<typename T>
-            inline bool TCopyTo(const T* ptrSource, UINT count, UINT64 byteOffset = 0)
+            inline bool TCopyFrom(const T* ptrSource, UINT count, UINT64 byteOffset = 0)
             {
-                return CopyTo(ptrSource, count * sizeof(T), byteOffset);
+                return CopyFrom(ptrSource, count * sizeof(T), byteOffset);
             }
 
             // Template copy from
             template<typename T>
-            inline bool TCopyFrom(T* ptrDest, UINT count, UINT64 byteOffset = 0)
+            inline bool TCopyTo(T* ptrDest, UINT count, UINT64 byteOffset = 0)
             {
-                return CopyFrom(ptrDest, count * sizeof(T), byteOffset);
+                return CopyTo(ptrDest, count * sizeof(T), byteOffset);
             }
 
             // No assign
@@ -108,6 +109,11 @@ namespace MGX::Core::GType
             
             // Mapping functions
             MappedBuffer Map(UINT64 size = UINT64_MAX, UINT64 offset = 0);
+
+            // Copy function to this buffer
+            bool CopyFrom(GPU::CommandList* ptrCmdList, Buffer* ptrSrcBuffer, UINT64 size = UINT64_MAX, UINT64 destOffset = 0, UINT srcOffset = 0);
+            // Copy from this buffer
+            bool CopyTo(GPU::CommandList* ptrCmdList, Buffer* ptrDestBuffer, UINT64 size = UINT64_MAX, UINT64 destOffset = 0, UINT srcOffset = 0);
 
             // Create Views
             bool CreateCBV(ID3D12Device* ptrDevice, D3D12_CPU_DESCRIPTOR_HANDLE handle, UINT size = UINT_MAX, UINT64 offset = 0);

@@ -170,9 +170,19 @@ MGX::Core::GPU::Resource* MGX::Core::Window::GetBuffer(unsigned int idx) noexcep
     return idx < GetBufferCount() ? &m_ptrBuffers[idx] : nullptr;
 }
 
+MGX::Core::GPU::Resource* MGX::Core::Window::GetCurrentBuffer() noexcept
+{
+    return &m_ptrBuffers[m_bufferIndex];
+}
+
 D3D12_CPU_DESCRIPTOR_HANDLE MGX::Core::Window::GetRtvCpuHandle(unsigned int idx) noexcept
 {
     return idx < GetBufferCount() ? m_rtvRange[idx].cpu : D3D12_CPU_DESCRIPTOR_HANDLE({ 0 });
+}
+
+D3D12_CPU_DESCRIPTOR_HANDLE MGX::Core::Window::GetCurrentRtvCpuHandle() noexcept
+{
+    return m_rtvRange[m_bufferIndex].cpu;
 }
 
 D3D12_VIEWPORT MGX::Core::Window::GetViewport(float minDepth, float maxDepth, UINT left, UINT top, UINT width, UINT height) const noexcept

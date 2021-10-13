@@ -34,6 +34,7 @@ namespace MGX::Core {
             // Buffers
             unsigned int GetCurrentBufferIndex() noexcept;
             GPU::Resource* GetBuffer(unsigned int idx) noexcept;
+            GPU::Resource* GetCurrentBuffer() noexcept;
             inline unsigned int GetBufferCount() const noexcept 
             {
                 return m_bufferCount;
@@ -53,6 +54,7 @@ namespace MGX::Core {
 
             // Rtv Handle
             D3D12_CPU_DESCRIPTOR_HANDLE GetRtvCpuHandle(unsigned int idx) noexcept;
+            D3D12_CPU_DESCRIPTOR_HANDLE GetCurrentRtvCpuHandle() noexcept;
 
             // Vieport function
             D3D12_VIEWPORT GetViewport(float minDepth = 1.0f, float maxDepth = 0.0f, UINT left = 0, UINT top = 0, UINT width = UINT_MAX, UINT height = UINT_MAX) const noexcept;

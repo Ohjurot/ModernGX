@@ -88,6 +88,39 @@ HRESULT MGX::Core::GPU::CommandList::name(LPCWSTR name)
     return hr;
 }
 
+void MGX::Core::GPU::CommandList::RSSetViewportAndRect(D3D12_VIEWPORT* viewPort, D3D12_RECT* rect)
+{
+    // Set view port and / or rect
+    if (viewPort)
+        m_ptrBase->RSSetViewports(1, viewPort);
+    if (rect)
+        m_ptrBase->RSSetScissorRects(1, rect);
+}
+
+void MGX::Core::GPU::CommandList::RSSetViewportAndRect(unsigned int count ...)
+{
+    // Target lists
+    D3D12_VIEWPORT vps[8];
+    RECT rects[8];
+
+    // Varlist loop
+    va_list vlist;
+    va_start(vlist, count);
+    for (unsigned int i = 0; i < count; i++)
+    {
+        // Extract to array
+        vps[i] = va_arg(vlist, D3D12_VIEWPORT);
+        rects[i] = va_arg(vlist, RECT);
+    }
+
+    // End list
+    va_end(vlist);
+
+    // Set on command list
+    m_ptrBase->RSSetViewports(count, vps);
+    m_ptrBase->RSSetScissorRects(count, rects);
+}
+
 void MGX::Core::GPU::CommandList::ClearRenderTarget(D3D12_CPU_DESCRIPTOR_HANDLE rtView, FLOAT clearValue[4])
 {
     // Flush all barrieres
@@ -102,4 +135,34 @@ void MGX::Core::GPU::CommandList::ClearRenderTarget(D3D12_CPU_DESCRIPTOR_HANDLE 
 
     // Dispatch call
     m_ptrBase->ClearRenderTargetView(rtView, clearValue, 0, nullptr);
+}
+
+void MGX::Core::GPU::CommandList::ClearDepthStencil(D3D12_CPU_DESCRIPTOR_HANDLE dsView, FLOAT depth, UINT8 stencil)
+{
+    // Flush and clear
+    ResourceBarrierFlush();
+    m_ptrBase->ClearDepthStencilView(dsView, D3D12_CLEAR_FLAG_DEPTH | D3D12_CLEAR_FLAG_STENCIL, depth, stencil, 0, nullptr);
+}
+
+void MGX::Core::GPU::CommandList::OMSetRenderTargetView(D3D12_CPU_DESCRIPTOR_HANDLE rtView)
+{
+    m_ptrBase->OMSetRenderTargets(1, &rtView, TRUE, nullptr);
+}
+
+void MGX::Core::GPU::CommandList::OMSetRenderTargetViews(D3D12_CPU_DESCRIPTOR_HANDLE dsView, D3D12_CPU_DESCRIPTOR_HANDLE rtView)
+{
+    m_ptrBase->OMSetRenderTargets(1, &rtView, TRUE, dsView.ptr ? &dsView : nullptr);
+}
+
+void MGX::Core::GPU::CommandList::IASetBuffer(D3D12_VERTEX_BUFFER_VIEW* vbView, D3D12_PRIMITIVE_TOPOLOGY topology)
+{
+    m_ptrBase->IASetPrimitiveTopology(topology);
+    m_ptrBase->IASetVertexBuffers(0, 1, vbView);
+}
+
+void MGX::Core::GPU::CommandList::IASetBuffer(D3D12_VERTEX_BUFFER_VIEW* vbView, D3D12_INDEX_BUFFER_VIEW* ibView, D3D12_PRIMITIVE_TOPOLOGY topology)
+{
+    m_ptrBase->IASetPrimitiveTopology(topology);
+    m_ptrBase->IASetVertexBuffers(0, 1, vbView);
+    m_ptrBase->IASetIndexBuffer(ibView);
 }

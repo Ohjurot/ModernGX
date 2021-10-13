@@ -48,9 +48,9 @@ void MGX::Core::GType::MappedBuffer::Unmap()
     }
 }
 
-bool MGX::Core::GType::MappedBuffer::CopyTo(const void* ptrSource, UINT64 size, UINT64 offset)
+bool MGX::Core::GType::MappedBuffer::CopyFrom(const void* ptrSource, UINT64 size, UINT64 offset)
 {
-    bool canCopy = this->IsValid() && size + offset < m_mappedSize;
+    bool canCopy = this->IsValid() && size + offset <= m_mappedSize;
 
     if (canCopy)
     {
@@ -60,9 +60,9 @@ bool MGX::Core::GType::MappedBuffer::CopyTo(const void* ptrSource, UINT64 size, 
     return canCopy;
 }
 
-bool MGX::Core::GType::MappedBuffer::CopyFrom(void* ptrDest, UINT64 size, UINT64 offset)
+bool MGX::Core::GType::MappedBuffer::CopyTo(void* ptrDest, UINT64 size, UINT64 offset)
 {
-    bool canCopy = this->IsValid() && size + offset < m_mappedSize;
+    bool canCopy = this->IsValid() && size + offset <= m_mappedSize;
 
     if (canCopy)
     {
@@ -149,7 +149,7 @@ MGX::Core::GType::Buffer& MGX::Core::GType::Buffer::operator=(Buffer&& other) no
 
 MGX::Core::GType::MappedBuffer MGX::Core::GType::Buffer::Map(UINT64 size, UINT64 offset)
 {
-    // Alight size
+    // Clamp size
     if (size == UINT64_MAX && offset == 0)
         size = m_bufferSize;
 
@@ -157,9 +157,55 @@ MGX::Core::GType::MappedBuffer MGX::Core::GType::Buffer::Map(UINT64 size, UINT64
     return MappedBuffer(m_ptrBase, size, offset);
 }
 
+bool MGX::Core::GType::Buffer::CopyFrom(GPU::CommandList* ptrCmdList, Buffer* ptrSrcBuffer, UINT64 size, UINT64 destOffset, UINT srcOffset)
+{
+    // Clamp size and check
+    size = std::min<UINT64>(size, m_bufferSize);
+    bool canCopy = destOffset + size <= m_bufferSize && srcOffset + size <= ptrSrcBuffer->Size();
+
+    // Copy
+    if (canCopy)
+    {
+        // State transitions
+        if (SetResourceState(D3D12_RESOURCE_STATE_COPY_DEST, ptrCmdList->ResourceBarrierPeek()))
+            ptrCmdList->ResourceBarrierPush();
+        if (ptrSrcBuffer->SetResourceState(D3D12_RESOURCE_STATE_COPY_SOURCE, ptrCmdList->ResourceBarrierPeek()))
+            ptrCmdList->ResourceBarrierPush();
+
+        // Flush and copy
+        ptrCmdList->ResourceBarrierFlush();
+        ptrCmdList->operator->()->CopyBufferRegion(m_ptrBase, destOffset, *ptrSrcBuffer, srcOffset, size);
+    }
+
+    return canCopy;
+}
+
+bool MGX::Core::GType::Buffer::CopyTo(GPU::CommandList* ptrCmdList, Buffer* ptrDestBuffer, UINT64 size, UINT64 destOffset, UINT srcOffset)
+{
+    // Clamp size and check
+    size = std::min<UINT64>(size, m_bufferSize);
+    bool canCopy = destOffset + size <= ptrDestBuffer->Size() && srcOffset + size <= m_bufferSize;
+
+    // Copy
+    if (canCopy)
+    {
+        // State transitions
+        if (SetResourceState(D3D12_RESOURCE_STATE_COPY_SOURCE, ptrCmdList->ResourceBarrierPeek()))
+            ptrCmdList->ResourceBarrierPush();
+        if (ptrDestBuffer->SetResourceState(D3D12_RESOURCE_STATE_COPY_DEST, ptrCmdList->ResourceBarrierPeek()))
+            ptrCmdList->ResourceBarrierPush();
+
+        // Flush and copy
+        ptrCmdList->ResourceBarrierFlush();
+        ptrCmdList->operator->()->CopyBufferRegion(*ptrDestBuffer, destOffset, m_ptrBase, srcOffset, size);
+    }
+
+    return canCopy;
+}
+
 bool MGX::Core::GType::Buffer::CreateCBV(ID3D12Device* ptrDevice, D3D12_CPU_DESCRIPTOR_HANDLE handle, UINT size, UINT64 offset)
 {
-    bool canCreateView = offset + size < m_bufferSize;
+    bool canCreateView = offset + size <= m_bufferSize;
 
     if (canCreateView)
     {
@@ -177,7 +223,7 @@ bool MGX::Core::GType::Buffer::CreateCBV(ID3D12Device* ptrDevice, D3D12_CPU_DESC
 
 bool MGX::Core::GType::Buffer::CreateSRV(ID3D12Device* ptrDevice, D3D12_CPU_DESCRIPTOR_HANDLE handle, UINT stride, UINT count, UINT64 offset, bool raw)
 {
-    bool canCreateView = offset + stride * count < m_bufferSize;
+    bool canCreateView = offset + stride * count <= m_bufferSize;
 
     if (canCreateView)
     {
@@ -199,7 +245,7 @@ bool MGX::Core::GType::Buffer::CreateSRV(ID3D12Device* ptrDevice, D3D12_CPU_DESC
 
 bool MGX::Core::GType::Buffer::CreateVBV(D3D12_VERTEX_BUFFER_VIEW* ptrView, UINT stride, UINT count, UINT64 offset)
 {
-    bool canCreateView = offset + stride * count < m_bufferSize;
+    bool canCreateView = offset + stride * count <= m_bufferSize;
 
     if (canCreateView)
     {
@@ -214,7 +260,7 @@ bool MGX::Core::GType::Buffer::CreateVBV(D3D12_VERTEX_BUFFER_VIEW* ptrView, UINT
 
 bool MGX::Core::GType::Buffer::CreateIBV(D3D12_INDEX_BUFFER_VIEW* ptrView, UINT indexCount, UINT64 offset, UINT indexByteSize)
 {
-    bool canCreateView = offset + indexByteSize * indexCount < m_bufferSize && (indexByteSize == 2 || indexByteSize == 4);
+    bool canCreateView = offset + indexByteSize * indexCount <= m_bufferSize && (indexByteSize == 2 || indexByteSize == 4);
 
     if (canCreateView)
     {

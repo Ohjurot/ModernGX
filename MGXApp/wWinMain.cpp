@@ -67,17 +67,16 @@ INT wWinMain_safe(HINSTANCE hInstance, PWSTR cmdArgs, INT cmdShow)
     D3D12_VERTEX_BUFFER_VIEW vbv;
     vertexBuffer.CreateVBV<Vertex>(&vbv, __crt_countof(vtxs));
 
-    // Copy to gpu
+    // Copy to cpu <--> cpu
     auto mapped = vertexBufferUpl.Map();
-    mapped.TCopyTo<Vertex>(vtxs, __crt_countof(vtxs));
+    mapped.TCopyFrom<Vertex>(vtxs, __crt_countof(vtxs));
     mapped.Unmap();
 
-    vertexBuffer.SetResourceState(D3D12_RESOURCE_STATE_COPY_DEST, list.ResourceBarrierPeekAndPush());
-    vertexBufferUpl.SetResourceState(D3D12_RESOURCE_STATE_COPY_SOURCE, list.ResourceBarrierPeekAndPush());
-    list.ResourceBarrierFlush();
-
-    list->CopyBufferRegion(vertexBuffer, 0, vertexBufferUpl, 0, vertexBuffer.Size());
+    // Copy GPU
+    vertexBufferUpl.CopyTo(&list, &vertexBuffer);
     vertexBuffer.SetResourceState(D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, list.ResourceBarrierPeekAndPush());
+    
+    // Execute copy operation
     list.Close();
     queue.Wait(queue.Execute(list));
     list.Reset();
@@ -98,42 +97,33 @@ INT wWinMain_safe(HINSTANCE hInstance, PWSTR cmdArgs, INT cmdShow)
             windowViewport = wnd.GetViewport();
             windowRect = wnd.GetScissorRect();
         }
-
-        // === Rendering ===
-        // TODO: Render loop
-
-        // === Window Compositing ===
         
-        // Set Resource to RTV
-        wnd.GetBuffer(wnd.GetCurrentBufferIndex())->SetResourceState(D3D12_RESOURCE_STATE_RENDER_TARGET, list.ResourceBarrierPeekAndPush());
-        
-        // Clear and setup RT
-        auto handle = wnd.GetRtvCpuHandle(wnd.GetCurrentBufferIndex());
-        list.ClearRenderTarget(handle);
-        list->OMSetRenderTargets(1, &handle, false, nullptr);
+        // Prepare buffer for RT
+        wnd.GetCurrentBuffer()->SetResourceState(D3D12_RESOURCE_STATE_RENDER_TARGET, list.ResourceBarrierPeekAndPush());
+        list.OMPrepareRtDsViews(wnd.GetCurrentRtvCpuHandle());
 
         // Bind pipeline state
         state.Bind(list);
         rConf.Bind(list);
 
         // Bind rasterizer
-        list->RSSetScissorRects(1, &windowRect);
-        list->RSSetViewports(1, &windowViewport);
+        list.RSSetViewportAndRect(&windowViewport, &windowRect);
 
         // Bind vertex buffer
-        list->IASetVertexBuffers(0, 1, &vbv);
-        list->IASetPrimitiveTopology(D3D10_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+        list.IASetBuffer(&vbv, D3D10_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
         
         // Draw
-        list->DrawInstanced(4, 1, 0, 0);
+        list.Draw(4);
 
-        // Set Resource to Present
+        // Prepare buffer for presenting
         wnd.GetBuffer(wnd.GetCurrentBufferIndex())->SetResourceState(D3D12_RESOURCE_STATE_PRESENT, list.ResourceBarrierPeekAndPush());
         
-        // === Execute and Present ===
+        // Execute 
         list.Close();
         queue.Wait(queue.Execute(list));
         list.Reset();
+
+        // Present frame
         wnd.Present(true);
     }
 
