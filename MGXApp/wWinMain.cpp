@@ -52,7 +52,7 @@ INT wWinMain_safe(HINSTANCE hInstance, PWSTR cmdArgs, INT cmdShow)
     // Vertex buffer (incl. upload buffer)
     Core::GType::Buffer vertexBuffer(device, Core::GPU::HeapUsage::Default, 64 * sizeof(Vertex));
     vertexBuffer.name(L"Vertex Buffer");
-    Core::GType::Buffer vertexBufferUpl(device, Core::GPU::HeapUsage::Upload, 64 * sizeof(Vertex));
+    Core::GType::Buffer vertexBufferUpl(device, Core::GPU::HeapUsage::Upload, vertexBuffer.Size());
     vertexBufferUpl.name(L"Vertex Upload Buffer");
 
     // CPU Load buffer
@@ -75,7 +75,7 @@ INT wWinMain_safe(HINSTANCE hInstance, PWSTR cmdArgs, INT cmdShow)
     // Copy GPU
     vertexBufferUpl.CopyTo(&list, &vertexBuffer);
     vertexBuffer.SetResourceState(D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, list.ResourceBarrierPeekAndPush());
-    
+
     // Execute copy operation
     list.Close();
     queue.Wait(queue.Execute(list));
@@ -84,7 +84,7 @@ INT wWinMain_safe(HINSTANCE hInstance, PWSTR cmdArgs, INT cmdShow)
     // END 
 
     // Create window
-    Core::Window wnd(L"My Window", device, queue, rtvDescHeap.Allocate(3), true, true);
+    Core::Window wnd(L"My Window", device, queue, rtvDescHeap.Allocate(3));
     D3D12_VIEWPORT windowViewport = wnd.GetViewport();
     RECT windowRect = wnd.GetScissorRect();
 
@@ -97,7 +97,7 @@ INT wWinMain_safe(HINSTANCE hInstance, PWSTR cmdArgs, INT cmdShow)
             windowViewport = wnd.GetViewport();
             windowRect = wnd.GetScissorRect();
         }
-        
+
         // Prepare buffer for RT
         wnd.GetCurrentBuffer()->SetResourceState(D3D12_RESOURCE_STATE_RENDER_TARGET, list.ResourceBarrierPeekAndPush());
         list.OMPrepareRtDsViews(wnd.GetCurrentRtvCpuHandle());
@@ -116,7 +116,7 @@ INT wWinMain_safe(HINSTANCE hInstance, PWSTR cmdArgs, INT cmdShow)
         list.Draw(4);
 
         // Prepare buffer for presenting
-        wnd.GetBuffer(wnd.GetCurrentBufferIndex())->SetResourceState(D3D12_RESOURCE_STATE_PRESENT, list.ResourceBarrierPeekAndPush());
+        wnd.GetCurrentBuffer()->SetResourceState(D3D12_RESOURCE_STATE_PRESENT, list.ResourceBarrierPeekAndPush());
         
         // Execute 
         list.Close();

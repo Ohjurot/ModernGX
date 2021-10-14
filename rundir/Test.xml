@@ -1,4 +1,4 @@
-<PipelineConfig Type="graphics" Name="Simple solid color">´
+<PipelineConfig Type="graphics" Name="Simple solid color">
 	<Shader Type="VS" Path="shaders/test.vs" />
 	<Shader Type="PS" Path="shaders/test.ps" />
 	
@@ -9,7 +9,7 @@
 	>
 		<Blend
 			BlendEnable="true"
-			SrcBlend="D3D12_BLEND_ONE"
+			SrcBlend="D3D12_BLEND_SRC_ALPHA"
 			DestBlend="D3D12_BLEND_ZERO"
 			BlendOp="D3D12_BLEND_OP_ADD"
 			SrcBlendAlpha="D3D12_BLEND_ONE"

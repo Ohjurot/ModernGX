@@ -127,7 +127,7 @@ namespace MGX::Core::GPU
             inline RootConfiguration(PipelineStateType type) : m_type(type) {};
             RootConfiguration(const RootConfiguration&) = default;
             
-            template<typename... T, typename = std::enable_if_t<std::is_same_v<T..., RootConfigurationEntry>>>
+            template<typename... T, typename = std::disjunction<std::is_same<T, RootConfigurationEntry>...>>
             RootConfiguration(PipelineStateType type, T... args) :
                 m_type(type)
             {
