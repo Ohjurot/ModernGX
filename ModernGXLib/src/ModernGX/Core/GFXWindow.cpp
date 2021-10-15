@@ -124,6 +124,26 @@ bool MGX::Core::Window::ProcessWindowEvents() noexcept
     return !this->checkWindowCloseFlag(false);
 }
 
+void MGX::Core::Window::AddWindowEventListener(WindowEventListener* ptrListener) noexcept
+{
+    if (m_ptrFirstEventListener)
+    {
+        m_ptrFirstEventListener = m_ptrFirstEventListener->AddWindowEventListener(ptrListener);
+    }
+    else
+    {
+        m_ptrFirstEventListener = ptrListener;
+    }
+}
+
+void MGX::Core::Window::RemoveWindowEventListener(WindowEventListener* ptrListener) noexcept
+{
+    if (m_ptrFirstEventListener)
+    {
+        m_ptrFirstEventListener = m_ptrFirstEventListener->RemoveWindowEventListener(ptrListener);
+    }
+}
+
 bool MGX::Core::Window::NeedsResizing() noexcept 
 {
     return m_needsResize;
@@ -289,6 +309,22 @@ bool MGX::Core::Window::handleWindowMessage(LRESULT* ptrLRESULT, HWND hwnd, UINT
         }
     }
 
-    // Send to parent handler
-    return EasyHWND::Window::handleWindowMessage(ptrLRESULT, hwnd, msg, wParam, lParam);
+    // Wrapp into window event
+    WindowEvent e;
+    e.wnd = hwnd;
+    e.msg = msg;
+    e.wParam = wParam;
+    e.lParam = lParam;
+
+    // Check if any listeners handles the event
+    if (m_ptrFirstEventListener && m_ptrFirstEventListener->HandleEvent(&e))
+    {
+        *ptrLRESULT = e.eventResult;
+        return true;
+    }
+    else
+    {
+        // Send to parent handler
+        return EasyHWND::Window::handleWindowMessage(ptrLRESULT, hwnd, msg, wParam, lParam);
+    }
 }

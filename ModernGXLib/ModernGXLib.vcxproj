@@ -116,6 +116,7 @@
     <ClInclude Include="src\ModernGX\Core\MGXCore.h" />
     <ClInclude Include="src\ModernGX\Core\Serialisation\SerPipelineState.h" />
     <ClInclude Include="src\ModernGX\Core\Serialisation\_internal_SerPipelineState.h" />
+    <ClInclude Include="src\ModernGX\Core\WindowEventListener.h" />
     <ClInclude Include="src\ModernGX\Foundation\COMGetable.h" />
     <ClInclude Include="src\ModernGX\Foundation\HRException.h" />
     <ClInclude Include="src\ModernGX\Util\ComPointer.h" />
@@ -155,6 +156,7 @@
     <ClCompile Include="src\ModernGX\Core\MGXCore.cpp" />
     <ClCompile Include="src\ModernGX\Core\Serialisation\SerPipelineState.cpp" />
     <ClCompile Include="src\ModernGX\Core\Serialisation\_internal_SerPipelineState.cpp" />
+    <ClCompile Include="src\ModernGX\Core\WindowEventListener.cpp" />
     <ClCompile Include="src\ModernGX\Foundation\HRException.cpp" />
     <ClCompile Include="src\ModernGX\Util\File.cpp" />
     <ClCompile Include="src\ModernGX\Util\Hash.cpp" />

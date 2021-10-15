@@ -5,6 +5,7 @@
 #include <ModernGX/Foundation/HRException.h>
 #include <ModernGX/Core/GPU/GPUResource.h>
 #include <ModernGX/Core/GPU/GPUDescriptorHeap.h>
+#include <ModernGX/Core/WindowEventListener.h>
 
 #include <exception>
 
@@ -23,6 +24,10 @@ namespace MGX::Core {
 
             // Window functions
             bool ProcessWindowEvents() noexcept;
+
+            // Window event chain
+            void AddWindowEventListener(WindowEventListener* ptrListener) noexcept;
+            void RemoveWindowEventListener(WindowEventListener* ptrListener) noexcept;
 
             // Swap chain sizing
             bool NeedsResizing() noexcept;
@@ -72,6 +77,9 @@ namespace MGX::Core {
         private:
             // Window class
             static EasyHWND::WindowClass s_wndCls;
+
+            // Window event chain
+            WindowEventListener* m_ptrFirstEventListener = nullptr;
 
             // Swap chain pointer
             ComPointer<IDXGISwapChain3> m_ptrSwapChain;
