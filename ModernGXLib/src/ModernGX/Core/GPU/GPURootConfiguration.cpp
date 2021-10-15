@@ -1,6 +1,25 @@
 #include "ModernGX.h"
 #include "GPURootConfiguration.h"
 
+MGX::Core::GPU::RootConfiguration::RootConfiguration(PipelineStateType type, unsigned int count ...) :
+    m_type(type)
+{
+    // Variadic start
+    va_list vaList;
+    va_start(vaList, count);
+
+    for (unsigned int i = 0; i < count; i++)
+    {
+        if (!PushBack(va_arg(vaList, RootConfigurationEntry)))
+        {
+            throw std::exception("Failed to add all constructor arguments to RootConfiguration");
+        }
+    }
+
+    // End va
+    va_end(vaList);
+}
+
 bool MGX::Core::GPU::RootConfiguration::PushBack(RootConfigurationEntry other) noexcept
 {
     bool canPushBack = m_usage < 32;

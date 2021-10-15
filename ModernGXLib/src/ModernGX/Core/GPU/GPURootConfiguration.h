@@ -44,7 +44,7 @@ namespace MGX::Core::GPU
                 // Count of 32-Bit values
                 UINT valueCount = 0;
                 // Pointer to cpu source data
-                void* ptrData = nullptr;
+                const void* ptrData = nullptr;
             }
             RootConstant;
 
@@ -82,7 +82,7 @@ namespace MGX::Core::GPU
         };
 
         // Factory functions
-        inline static RootConfigurationEntry MakeRootConstant(unsigned int num, void* data)
+        inline static RootConfigurationEntry MakeRootConstant(unsigned int num, const void* data)
         {
             RootConfigurationEntry e;
             e.type = RootConfigurationEntry_t::RootConstant;
@@ -126,17 +126,7 @@ namespace MGX::Core::GPU
             // Construct
             inline RootConfiguration(PipelineStateType type) : m_type(type) {};
             RootConfiguration(const RootConfiguration&) = default;
-            
-            template<typename... T, typename = std::disjunction<std::is_same<T, RootConfigurationEntry>...>>
-            RootConfiguration(PipelineStateType type, T... args) :
-                m_type(type)
-            {
-                // Unpack
-                if (!PushBack(args...))
-                {
-                    throw std::exception("To many variadic elements in RootConfiguration constructor");
-                }
-            }
+            RootConfiguration(PipelineStateType type, unsigned int count...);
 
             // Push back new entry
             bool PushBack(RootConfigurationEntry other) noexcept;
