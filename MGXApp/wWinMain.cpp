@@ -1,7 +1,13 @@
+/*
+*
+* TODO: - Textures
+*       - Upload Buffers
+*/
 #include <ModernGX.h>
 #include <ModernGX/Util/Memory.h>
 #include <ModernGX/Foundation/HRException.h>
 #include <ModernGX/Core/GFXWindow.h>
+#include <ModernGX/Core/WindowEventListener.h>
 #include <ModernGX/Core/GPU/GPUDevice.h>
 #include <ModernGX/Core/GPU/GPUQueue.h>
 #include <ModernGX/Core/GPU/GPUCommandList.h>
@@ -33,7 +39,7 @@ INT wWinMain_safe(HINSTANCE hInstance, PWSTR cmdArgs, INT cmdShow)
     
     // Device
     Core::GPU::Device device; device.name(L"Main device");
-    
+
     // Commands
     Core::GPU::CommandQueue queue(device); queue.name(L"Default direct queue");
     Core::GPU::CommandList list(device); list.name(L"Main direct command list");
@@ -45,7 +51,7 @@ INT wWinMain_safe(HINSTANCE hInstance, PWSTR cmdArgs, INT cmdShow)
     // TEST
     float buffer[4] = { 0.1f, 0.05f, 0.85f, 1.0f };
     Core::GPU::PipelineState state(device, L"Test.xml");
-    Core::GPU::RootConfiguration rConf(state.GetType(),
+    Core::GPU::RootConfiguration rConf(state.GetType(), 1,
         Core::GPU::RootConfigurationEntry::MakeRootConstant(4, buffer)
     );
 
