@@ -78,12 +78,42 @@ MGX::Core::GPU::HeapAllocationCookie MGX::Core::GPU::Device::GetAllocationInfo(c
     return info;
 }
 
-MGX::Core::GPU::FormatSupport MGX::Core::GPU::Device::CheckFormatSupport(const DXGI_FORMAT format) noexcept
+MGX::Core::GPU::FormatSupport MGX::Core::GPU::Device::CheckFormatSupport(DXGI_FORMAT format) noexcept
 {
     // Query format support
     FormatSupport fmtSupport = {};
     m_ptrBase->CheckFeatureSupport(D3D12_FEATURE_FORMAT_SUPPORT, &fmtSupport, sizeof(FormatSupport));
     return fmtSupport;
+}
+
+MGX::Core::GPU::MSAASupport MGX::Core::GPU::Device::CheckMSAASupport(DXGI_FORMAT format, D3D12_MULTISAMPLE_QUALITY_LEVEL_FLAGS flags) noexcept
+{
+    // Create and aliass output struct
+    MSAASupport msaaSupport;
+
+    // Loop msaa values
+    UINT index = 0;
+    for (UINT msaaLevel = 1; msaaLevel <= 16; msaaLevel *= 2)
+    {
+        // Describe info struct
+        D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS levels = {};
+        levels.Format = format;
+        levels.SampleCount = msaaLevel;
+        levels.Flags = flags;
+        levels.NumQualityLevels = UINT_MAX;
+
+        // Query value
+        if (SUCCEEDED(CheckFeatureSupport<D3D12_FEATURE_DATA_MULTISAMPLE_QUALITY_LEVELS>(&levels)))
+        {
+            msaaSupport.values[index++] = levels.NumQualityLevels;
+        }
+        else
+        {
+            msaaSupport.values[index++] = 0;
+        }
+    }
+
+    return msaaSupport;
 }
 
 #ifdef _DEBUG

@@ -16,6 +16,23 @@ namespace MGX::Core::GPU
         D3D12_FORMAT_SUPPORT2 fmt2 = (D3D12_FORMAT_SUPPORT2)0xFFFFFFFF;
     };
 
+    // MSAA Support indication
+    struct MSAASupport
+    {
+        union 
+        {
+            UINT values[5] = {0};
+            struct
+            {
+                UINT qLevelMSAA1;
+                UINT qLevelMSAA2;
+                UINT qLevelMSAA4;
+                UINT qLevelMSAA8;
+                UINT qLevelMSAA16;
+            };
+        };
+    };
+
     // GPU Device
     class Device : public Foundation::COMGetable<ID3D12Device> 
     {
@@ -34,7 +51,10 @@ namespace MGX::Core::GPU
             HeapAllocationCookie GetAllocationInfo(const D3D12_RESOURCE_DESC* ptrDesc) noexcept;
 
             // Check format support
-            FormatSupport CheckFormatSupport(const DXGI_FORMAT format) noexcept;
+            FormatSupport CheckFormatSupport(DXGI_FORMAT format) noexcept;
+
+            // Check msaa support
+            MSAASupport CheckMSAASupport(DXGI_FORMAT format, D3D12_MULTISAMPLE_QUALITY_LEVEL_FLAGS flags = D3D12_MULTISAMPLE_QUALITY_LEVELS_FLAG_NONE) noexcept;
 
             // Check feature support
             template<typename T>
