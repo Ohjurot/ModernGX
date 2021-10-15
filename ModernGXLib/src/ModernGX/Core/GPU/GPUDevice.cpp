@@ -78,6 +78,14 @@ MGX::Core::GPU::HeapAllocationCookie MGX::Core::GPU::Device::GetAllocationInfo(c
     return info;
 }
 
+MGX::Core::GPU::FormatSupport MGX::Core::GPU::Device::CheckFormatSupport(const DXGI_FORMAT format) noexcept
+{
+    // Query format support
+    FormatSupport fmtSupport = {};
+    m_ptrBase->CheckFeatureSupport(D3D12_FEATURE_FORMAT_SUPPORT, &fmtSupport, sizeof(FormatSupport));
+    return fmtSupport;
+}
+
 #ifdef _DEBUG
 void MGX::Core::GPU::Device::__DebugInit() 
 {

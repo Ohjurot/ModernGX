@@ -9,6 +9,13 @@
 
 namespace MGX::Core::GPU 
 {
+    // Format support group
+    struct FormatSupport
+    {
+        D3D12_FORMAT_SUPPORT1 fmt1 = (D3D12_FORMAT_SUPPORT1)0xFFFFFFFF;
+        D3D12_FORMAT_SUPPORT2 fmt2 = (D3D12_FORMAT_SUPPORT2)0xFFFFFFFF;
+    };
+
     // GPU Device
     class Device : public Foundation::COMGetable<ID3D12Device> 
     {
@@ -26,9 +33,12 @@ namespace MGX::Core::GPU
             // Get allocation info for resource
             HeapAllocationCookie GetAllocationInfo(const D3D12_RESOURCE_DESC* ptrDesc) noexcept;
 
+            // Check format support
+            FormatSupport CheckFormatSupport(const DXGI_FORMAT format) noexcept;
+
             // Check feature support
             template<typename T>
-            HRESULT CheckFeatureSupport(T* ptrFeature) const noexcept 
+            HRESULT CheckFeatureSupport(T* ptrFeature) noexcept 
             {
                 return m_ptrBase->CheckFeatureSupport(__FeatureHelper<T>(), ptrFeature, sizeof(T));
             }
