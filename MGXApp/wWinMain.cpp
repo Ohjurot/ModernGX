@@ -37,7 +37,7 @@ INT wWinMain_safe(HINSTANCE hInstance, PWSTR cmdArgs, INT cmdShow)
     // Init MGX
     MGX_INIT();
     
-    // Device
+    // Device1
     Core::GPU::Device device; device.name(L"Main device");
 
     // Commands
