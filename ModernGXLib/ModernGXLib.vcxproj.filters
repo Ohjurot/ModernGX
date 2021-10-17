@@ -129,6 +129,12 @@
     <ClInclude Include="src\ModernGX\Core\WindowEventListener.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="src\ModernGX\Core\GPUTypes\GTypeTexture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ModernGX\Util\DXGIFormat.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\ModernGX.cpp">
@@ -219,6 +225,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\ModernGX\Core\WindowEventListener.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ModernGX\Core\GPUTypes\GTypeTexture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ModernGX\Util\DXGIFormat.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,7 +1,11 @@
 /*
 *
-* TODO: - Textures
-*       - Upload Buffers
+* TODO:   - Upload Buffers
+* 
+* LIMITS: - No UAV
+*         - Not much error informations
+*         - TextureCopy from/to buffer can only copy the full texture
+*         - SRV for texture do not work for msaa (FIX IT)
 */
 #include <ModernGX.h>
 #include <ModernGX/Util/Memory.h>
@@ -19,6 +23,7 @@
 #include <ModernGX/Core/GPU/GPURootConfiguration.h>
 
 #include <ModernGX/Core/GPUTypes/GTypeBuffer.h>
+#include <ModernGX/Core/GPUTypes/GTypeTexture.h>
 
 // Windows enable visual styles
 #pragma comment(linker,"\"/manifestdependency:type='win32' \
@@ -41,24 +46,19 @@ INT wWinMain_safe(HINSTANCE hInstance, PWSTR cmdArgs, INT cmdShow)
     Core::GPU::Device device; device.name(L"Main device");
 
     // Commands
-    Core::GPU::CommandQueue queue(device); queue.name(L"Default direct queue");
-    Core::GPU::CommandList list(device); list.name(L"Main direct command list");
+    Core::GPU::CommandQueue queue(device);
+    Core::GPU::CommandList list(device);
 
     // RTV Heap
     Core::GPU::DescriptorHeap rtvDescHeap(device, Core::GPU::DescriptorHeapUsage::RenderTargetView, 16); 
-    rtvDescHeap.name(L"RTV Descriptor Heap");
+    Core::GPU::DescriptorHeap srvDescHeap(device, Core::GPU::DescriptorHeapUsage::ShaderResource, 16); 
 
     // TEST
-    float buffer[4] = { 0.1f, 0.05f, 0.85f, 1.0f };
-    Core::GPU::PipelineState state(device, L"Test.xml");
-    Core::GPU::RootConfiguration rConf(state.GetType(), 1,
-        Core::GPU::RootConfigurationEntry::MakeRootConstant(4, buffer)
-    );
-
+    
     // Vertex buffer (incl. upload buffer)
     Core::GType::Buffer vertexBuffer(device, Core::GPU::HeapUsage::Default, 64 * sizeof(Vertex));
     vertexBuffer.name(L"Vertex Buffer");
-    Core::GType::Buffer vertexBufferUpl(device, Core::GPU::HeapUsage::Upload, vertexBuffer.Size());
+    Core::GType::Buffer vertexBufferUpl(device, Core::GPU::HeapUsage::Upload, 1024 * 1024 * 1024);
     vertexBufferUpl.name(L"Vertex Upload Buffer");
 
     // CPU Load buffer
@@ -69,6 +69,19 @@ INT wWinMain_safe(HINSTANCE hInstance, PWSTR cmdArgs, INT cmdShow)
         { 0.5f,  0.5f, 0.0f, 1.0f},
     };
 
+    UINT8* img = (UINT8*)malloc(64 * 64 * 4);
+    for (unsigned int x = 0; x < 64; x++)
+    {
+        for (unsigned int y = 0; y < 64; y++)
+        {
+            UINT8* pPx = &img[(y * 64 * 4) + (x * 4)];
+            pPx[0] = x * 4;
+            pPx[1] = y * 4;
+            pPx[2] = 0;
+            pPx[3] = 255;
+        }
+    }
+
     // View
     D3D12_VERTEX_BUFFER_VIEW vbv;
     vertexBuffer.CreateVBV<Vertex>(&vbv, __crt_countof(vtxs));
@@ -76,16 +89,26 @@ INT wWinMain_safe(HINSTANCE hInstance, PWSTR cmdArgs, INT cmdShow)
     // Copy to cpu <--> cpu
     auto mapped = vertexBufferUpl.Map();
     mapped.TCopyFrom<Vertex>(vtxs, __crt_countof(vtxs));
+    mapped.CopyFrom(img, 64 * 64 * 4, 1024 * 64);
     mapped.Unmap();
 
     // Copy GPU
-    vertexBufferUpl.CopyTo(&list, &vertexBuffer);
+    vertexBufferUpl.CopyTo(&list, &vertexBuffer, sizeof(Vertex) * __crt_countof(vtxs));
     vertexBuffer.SetResourceState(D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, list.ResourceBarrierPeekAndPush());
 
-    // Execute copy operation
-    list.Close();
-    queue.Wait(queue.Execute(list));
-    list.Reset();
+
+    // Texture 
+    Core::GType::Texture tex(device, Core::GPU::HeapUsage::Default, DXGI_FORMAT_R8G8B8A8_UNORM, 64, 64, 0);
+    tex.CopyFromBuffer(&list, &vertexBufferUpl, 1024 * 64);
+    auto srvHandle = srvDescHeap.Allocate(1);
+    tex.CreateSRV(device, srvHandle[0]);
+
+    float buffer[4] = { 0.1f, 0.05f, 0.85f, 1.0f };
+    Core::GPU::PipelineState state(device, L"Test.xml");
+    Core::GPU::RootConfiguration rConf(state.GetType(), 2,
+        Core::GPU::RootConfigurationEntry::MakeRootConstant(4, buffer),
+        Core::GPU::RootConfigurationEntry::MakeDescriptorTable(srvHandle[0])
+    );
 
     // END 
 
@@ -109,6 +132,7 @@ INT wWinMain_safe(HINSTANCE hInstance, PWSTR cmdArgs, INT cmdShow)
         list.OMPrepareRtDsViews(wnd.GetCurrentRtvCpuHandle());
 
         // Bind pipeline state
+        list.SetHeaps(srvDescHeap);
         state.Bind(list);
         rConf.Bind(list);
 

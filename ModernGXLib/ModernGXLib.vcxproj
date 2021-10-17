@@ -104,6 +104,7 @@
     <ClInclude Include="src\ModernGX\Core\Concurrent\SpinLock.h" />
     <ClInclude Include="src\ModernGX\Core\GFXWindow.h" />
     <ClInclude Include="src\ModernGX\Core\GPUTypes\GTypeBuffer.h" />
+    <ClInclude Include="src\ModernGX\Core\GPUTypes\GTypeTexture.h" />
     <ClInclude Include="src\ModernGX\Core\GPU\GPUCommandList.h" />
     <ClInclude Include="src\ModernGX\Core\GPU\GPUDescriptorHeap.h" />
     <ClInclude Include="src\ModernGX\Core\GPU\GPUDevice.h" />
@@ -120,6 +121,7 @@
     <ClInclude Include="src\ModernGX\Foundation\COMGetable.h" />
     <ClInclude Include="src\ModernGX\Foundation\HRException.h" />
     <ClInclude Include="src\ModernGX\Util\ComPointer.h" />
+    <ClInclude Include="src\ModernGX\Util\DXGIFormat.h" />
     <ClInclude Include="src\ModernGX\Util\EasyHWND.h" />
     <ClInclude Include="src\ModernGX\Util\File.h" />
     <ClInclude Include="src\ModernGX\Util\Hash.h" />
@@ -145,6 +147,7 @@
     <ClCompile Include="src\ModernGX\Core\Concurrent\SpinLock.cpp" />
     <ClCompile Include="src\ModernGX\Core\GFXWindow.cpp" />
     <ClCompile Include="src\ModernGX\Core\GPUTypes\GTypeBuffer.cpp" />
+    <ClCompile Include="src\ModernGX\Core\GPUTypes\GTypeTexture.cpp" />
     <ClCompile Include="src\ModernGX\Core\GPU\GPUCommandList.cpp" />
     <ClCompile Include="src\ModernGX\Core\GPU\GPUDescriptorHeap.cpp" />
     <ClCompile Include="src\ModernGX\Core\GPU\GPUDevice.cpp" />
@@ -158,6 +161,7 @@
     <ClCompile Include="src\ModernGX\Core\Serialisation\_internal_SerPipelineState.cpp" />
     <ClCompile Include="src\ModernGX\Core\WindowEventListener.cpp" />
     <ClCompile Include="src\ModernGX\Foundation\HRException.cpp" />
+    <ClCompile Include="src\ModernGX\Util\DXGIFormat.cpp" />
     <ClCompile Include="src\ModernGX\Util\File.cpp" />
     <ClCompile Include="src\ModernGX\Util\Hash.cpp" />
     <ClCompile Include="src\ModernGX\Util\Memory.cpp" />

@@ -100,6 +100,13 @@ namespace MGX::Core::GPU
             void IASetBuffer(D3D12_VERTEX_BUFFER_VIEW* vbView, D3D12_PRIMITIVE_TOPOLOGY topology = D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
             void IASetBuffer(D3D12_VERTEX_BUFFER_VIEW* vbView, D3D12_INDEX_BUFFER_VIEW* ibView, D3D12_PRIMITIVE_TOPOLOGY topology = D3D10_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
             
+            // Set heaps
+            inline void SetHeaps(ID3D12DescriptorHeap* ptrHeap, ID3D12DescriptorHeap* ptrHeap2 = nullptr)
+            {
+                ID3D12DescriptorHeap* heaps[] = { ptrHeap, ptrHeap2 };
+                m_ptrBase->SetDescriptorHeaps(ptrHeap2 ? 2 : 1, heaps);
+            }
+
             // Draw
             inline void Draw(UINT vertexPerInstanceCount, UINT instanceCount = 1, UINT startVertexOffset = 0, UINT startInstanceOffset = 0)
             {
