@@ -1,7 +1,8 @@
 #include "ModernGX.h"
 #include "GPUCommandList.h"
 
-MGX::Core::GPU::CommandList::CommandList(ID3D12Device* ptrDevice, D3D12_COMMAND_LIST_TYPE type) 
+MGX::Core::GPU::CommandList::CommandList(ID3D12Device* ptrDevice, D3D12_COMMAND_LIST_TYPE type)  :
+    m_type(type)
 {
     // Create command allocator
     MGX_EVALUATE_HRESULT("ID3D12Device->CreateCommandAllocator(...)", ptrDevice->CreateCommandAllocator(type, IID_PPV_ARGS(&m_ptrAllocator)));
@@ -17,10 +18,14 @@ MGX::Core::GPU::CommandList::CommandList(ID3D12Device* ptrDevice, D3D12_COMMAND_
 
 MGX::Core::GPU::CommandList& MGX::Core::GPU::CommandList::operator=(CommandList&& other) noexcept 
 {
+    // Release this
+    this->~CommandList();
+
     // Set this
     m_ptrBase = other.m_ptrBase;
     m_ptrAllocator = other.m_ptrAllocator;
     m_bOpen = other.m_bOpen;
+    m_type = other.m_type;
 
     // Clear other
     other.m_ptrBase.release();

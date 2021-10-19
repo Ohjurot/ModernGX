@@ -5,7 +5,9 @@
 * LIMITS: - No UAV
 *         - Not much error informations
 *         - TextureCopy from/to buffer can only copy the full texture
-*         - SRV for texture do not work for msaa (FIX IT)
+*         - SRV for texture do not work for msaa
+*         - No Multithread guards implemented (locking exists but is not used)
+*         - WIC Image IO is just very basic (need way more attention)
 */
 #include <ModernGX.h>
 #include <ModernGX/Util/Memory.h>
@@ -24,6 +26,8 @@
 
 #include <ModernGX/Core/GPUTypes/GTypeBuffer.h>
 #include <ModernGX/Core/GPUTypes/GTypeTexture.h>
+
+#include <ModernGX/Coding/TextureCoding.h>
 
 // Windows enable visual styles
 #pragma comment(linker,"\"/manifestdependency:type='win32' \
@@ -58,7 +62,7 @@ INT wWinMain_safe(HINSTANCE hInstance, PWSTR cmdArgs, INT cmdShow)
     // Vertex buffer (incl. upload buffer)
     Core::GType::Buffer vertexBuffer(device, Core::GPU::HeapUsage::Default, 64 * sizeof(Vertex));
     vertexBuffer.name(L"Vertex Buffer");
-    Core::GType::Buffer vertexBufferUpl(device, Core::GPU::HeapUsage::Upload, 1024 * 1024 * 1024);
+    Core::GType::Buffer vertexBufferUpl(device, Core::GPU::HeapUsage::Upload, 32 * 1024 * 1024);
     vertexBufferUpl.name(L"Vertex Upload Buffer");
 
     // CPU Load buffer
@@ -69,18 +73,11 @@ INT wWinMain_safe(HINSTANCE hInstance, PWSTR cmdArgs, INT cmdShow)
         { 0.5f,  0.5f, 0.0f, 1.0f},
     };
 
-    UINT8* img = (UINT8*)malloc(64 * 64 * 4);
-    for (unsigned int x = 0; x < 64; x++)
-    {
-        for (unsigned int y = 0; y < 64; y++)
-        {
-            UINT8* pPx = &img[(y * 64 * 4) + (x * 4)];
-            pPx[0] = x * 4;
-            pPx[1] = y * 4;
-            pPx[2] = 0;
-            pPx[3] = 255;
-        }
-    }
+    Coding::TextureFile textureImg(L"./test.png");
+    auto imgStride = textureImg.GetChannelCount() * textureImg.GetWidth();
+    auto imgSize = imgStride * textureImg.GetHeight();
+    void* img = malloc(imgSize);
+    auto res = textureImg.ReadPixels(0, 0, textureImg.GetWidth(), textureImg.GetHeight(), img, imgSize, imgStride);
 
     // View
     D3D12_VERTEX_BUFFER_VIEW vbv;
@@ -89,7 +86,7 @@ INT wWinMain_safe(HINSTANCE hInstance, PWSTR cmdArgs, INT cmdShow)
     // Copy to cpu <--> cpu
     auto mapped = vertexBufferUpl.Map();
     mapped.TCopyFrom<Vertex>(vtxs, __crt_countof(vtxs));
-    mapped.CopyFrom(img, 64 * 64 * 4, 1024 * 64);
+    mapped.CopyFrom(img, imgSize, 1024 * 64);
     mapped.Unmap();
 
     // Copy GPU
@@ -98,8 +95,9 @@ INT wWinMain_safe(HINSTANCE hInstance, PWSTR cmdArgs, INT cmdShow)
 
 
     // Texture 
-    Core::GType::Texture tex(device, Core::GPU::HeapUsage::Default, DXGI_FORMAT_R8G8B8A8_UNORM, 64, 64, 0);
+    Core::GType::Texture tex(device, Core::GPU::HeapUsage::Default, textureImg.GetDxgiFormat(), textureImg.GetWidth(), textureImg.GetHeight(), 0);
     tex.CopyFromBuffer(&list, &vertexBufferUpl, 1024 * 64);
+    tex.SetResourceState(D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, list.ResourceBarrierPeekAndPush());
     auto srvHandle = srvDescHeap.Allocate(1);
     tex.CreateSRV(device, srvHandle[0]);
 

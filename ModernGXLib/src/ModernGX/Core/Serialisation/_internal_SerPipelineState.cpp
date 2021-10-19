@@ -455,7 +455,7 @@ bool MGX::Core::Serialisation::PipelineState_helpers::DSerLoadShader(D3D12_GRAPH
 
             // Convert to wide
             WCHAR fileNameW[2048];
-            MultiByteToWideChar(CP_UTF8, 0, fileName, -1, fileNameW, 4096);
+            MultiByteToWideChar(CP_UTF8, 0, fileName, -1, fileNameW, 2048);
 
             // Open file
             Util::File file = Util::File::Open(fileNameW, folderA, folderB);

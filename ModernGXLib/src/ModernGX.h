@@ -14,9 +14,11 @@
 
 // Windows releated stuff
 #include <wincodec.h>
+#include <shlwapi.h>
 
 // STD LIB
 #include <atomic>
+#include <exception>
 
 // Include lib generic
 #include <ModernGX/Util/ComPointer.h> 
@@ -24,8 +26,16 @@
 
 // MGX Defines
 
+// MGX CoInit
+#ifndef MGX_NO_COINIT
+#define MGX_COINIT() if(FAILED(CoInitialize(nullptr))) throw std::exception("CoInitialize failed!");
+#else
+#define MGX_COINIT()
+#endif
+
 // MGX_INIT_CORE Macro
 #define MGX_INIT_CORE() \
+MGX_COINIT(); \
 MGX::Core::Init();
 
 // MGX_INIT_DEBUG Macro
@@ -38,11 +48,11 @@ if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&__mgx_init_debug_ptr)))) { \
 // MGX_INIT() Macro
 #ifdef MGX_DEBUG
 #define MGX_INIT() \
-MGX_INIT_DEBUG() \
-MGX_INIT_CORE()
+MGX_INIT_CORE(); \
+MGX_INIT_DEBUG();
 #else
 #define MGX_INIT() \
-MGX_INIT_CORE()
+MGX_INIT_CORE();
 #endif
 
 // MGX_COM_NAME(comPtr) Macro
@@ -51,3 +61,8 @@ MGX_INIT_CORE()
 #else
 #define MGX_COM_NAME(ptr, nm) ptr.name(nm)
 #endif
+
+// Link libs
+#pragma comment(lib, "Windowscodecs.lib")
+#pragma comment(lib, "shlwapi.lib")
+#pragma comment(lib, "uuid.lib")

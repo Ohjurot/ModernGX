@@ -91,6 +91,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\ModernGX.h" />
+    <ClInclude Include="src\ModernGX\Coding\TextureCoding.h" />
     <ClInclude Include="src\ModernGX\Core\Allocator\FastPoolAccelerator.h" />
     <ClInclude Include="src\ModernGX\Core\Allocator\FastPoolAllocator.h" />
     <ClInclude Include="src\ModernGX\Core\Allocator\IAllocator.h" />
@@ -120,6 +121,8 @@
     <ClInclude Include="src\ModernGX\Core\WindowEventListener.h" />
     <ClInclude Include="src\ModernGX\Foundation\COMGetable.h" />
     <ClInclude Include="src\ModernGX\Foundation\HRException.h" />
+    <ClInclude Include="src\ModernGX\Helpers\HashedBuffer.h" />
+    <ClInclude Include="src\ModernGX\Helpers\GPUExchangeStack.h" />
     <ClInclude Include="src\ModernGX\Util\ComPointer.h" />
     <ClInclude Include="src\ModernGX\Util\DXGIFormat.h" />
     <ClInclude Include="src\ModernGX\Util\EasyHWND.h" />
@@ -136,6 +139,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="src\ModernGX\Coding\TextureCoding.cpp" />
     <ClCompile Include="src\ModernGX\Core\Allocator\FastPoolAccelerator.cpp" />
     <ClCompile Include="src\ModernGX\Core\Allocator\FastPoolAllocator.cpp" />
     <ClCompile Include="src\ModernGX\Core\Allocator\IAllocator.cpp" />

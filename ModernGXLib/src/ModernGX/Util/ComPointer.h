@@ -62,7 +62,7 @@ class ComPointer {
 			return m_pointer;
 		}
 
-		// Query interface function
+		// Query interface functions
 		template<typename T>
 		bool queryInterface(ComPointer<T>& other) {
 			// Only on valid pointer
@@ -72,6 +72,16 @@ class ComPointer {
 
 			// Fallback
 			return false;
+		}
+		template<typename T>
+		HRESULT queryInterfaceHR(ComPointer<T>& other) {
+			// Only on valid pointer
+			if (m_pointer) {
+				return m_pointer->QueryInterface(IID_PPV_ARGS(&other));
+			}
+
+			// Fallback
+			return E_FAIL;
 		}
 
 		// Assign operator

@@ -30,6 +30,12 @@ namespace MGX::Core::GPU
             void Reset() noexcept;
             bool IsOpen() noexcept;
 
+            // Retrive type of command list
+            inline D3D12_COMMAND_LIST_TYPE GetType() const noexcept
+            {
+                return m_type;
+            }
+
             // Peek next barrier
             inline D3D12_RESOURCE_BARRIER* ResourceBarrierPeek() noexcept
             {
@@ -130,6 +136,9 @@ namespace MGX::Core::GPU
             // Resource Barrieres
             D3D12_RESOURCE_BARRIER m_resBarriers[256];
             UINT m_barrierUsage = 0;
+
+            // Type of commands list
+            D3D12_COMMAND_LIST_TYPE m_type = D3D12_COMMAND_LIST_TYPE_DIRECT;
 
             // Indicates command list state
             bool m_bOpen = true;
