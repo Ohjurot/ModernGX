@@ -1,12 +1,11 @@
 /*
-* TODO: - Not much error informations (FIX NOW!)
-* 
 * LIMITS: - No UAV
 *         - TextureCopy from/to buffer can only copy the full texture
 *         - SRV for texture do not work for msaa
 *         - No Multithread guards implemented (locking exists but is not used)
 *         - WIC Image IO is just very basic (need way more attention)
 *         - Upload buffer can only operate with DIRECT command list (not COPY)
+*         - Not much error informations
 */
 #include <ModernGX.h>
 #include <ModernGX/Util/Memory.h>
