@@ -135,7 +135,7 @@
     <ClInclude Include="src\ModernGX\Util\DXGIFormat.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\ModernGX\Helpers\GPUExchangeStack.h">
+    <ClInclude Include="src\ModernGX\Helpers\GPUUploadStack.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\ModernGX\Helpers\HashedBuffer.h">
@@ -243,6 +243,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\ModernGX\Coding\TextureCoding.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ModernGX\Helpers\GPUUploadStack.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

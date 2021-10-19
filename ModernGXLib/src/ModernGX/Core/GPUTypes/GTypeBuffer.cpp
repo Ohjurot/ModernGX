@@ -91,7 +91,7 @@ MGX::Core::GType::MappedBuffer& MGX::Core::GType::MappedBuffer::operator=(Mapped
     return *this;
 }
 
-unsigned char& MGX::Core::GType::MappedBuffer::operator[](unsigned int index)
+unsigned char& MGX::Core::GType::MappedBuffer::operator[](UINT64 index)
 {
     // Range check
     if (index >= m_mappedSize)
@@ -157,7 +157,7 @@ MGX::Core::GType::MappedBuffer MGX::Core::GType::Buffer::Map(UINT64 size, UINT64
     return MappedBuffer(m_ptrBase, size, offset);
 }
 
-bool MGX::Core::GType::Buffer::CopyFrom(GPU::CommandList* ptrCmdList, Buffer* ptrSrcBuffer, UINT64 size, UINT64 destOffset, UINT srcOffset)
+bool MGX::Core::GType::Buffer::CopyFrom(GPU::CommandList* ptrCmdList, Buffer* ptrSrcBuffer, UINT64 size, UINT64 destOffset, UINT64 srcOffset)
 {
     // Clamp size and check
     size = std::min<UINT64>(size, m_bufferSize);
@@ -180,7 +180,7 @@ bool MGX::Core::GType::Buffer::CopyFrom(GPU::CommandList* ptrCmdList, Buffer* pt
     return canCopy;
 }
 
-bool MGX::Core::GType::Buffer::CopyTo(GPU::CommandList* ptrCmdList, Buffer* ptrDestBuffer, UINT64 size, UINT64 destOffset, UINT srcOffset)
+bool MGX::Core::GType::Buffer::CopyTo(GPU::CommandList* ptrCmdList, Buffer* ptrDestBuffer, UINT64 size, UINT64 destOffset, UINT64 srcOffset)
 {
     // Clamp size and check
     size = std::min<UINT64>(size, m_bufferSize);

@@ -42,8 +42,8 @@ namespace MGX::Core::GType
             bool CopyTo(GPU::CommandList* ptrCmdList, Texture* ptrDest, bool allowBarriers = true);
             
             // Copy from buffer (Upload/Download)
-            bool CopyFromBuffer(GPU::CommandList* ptrCmdList, GPU::Resource* ptrSrc, UINT bufferOffset = 0, bool allowBarries = true);
-            bool CopyToBuffer(GPU::CommandList* ptrCmdList, GPU::Resource* ptrDest, UINT bufferOffset = 0, bool allowBarries = true);
+            bool CopyFromBuffer(GPU::CommandList* ptrCmdList, GPU::Resource* ptrSrc, UINT64 bufferOffset = 0, bool allowBarries = true);
+            bool CopyToBuffer(GPU::CommandList* ptrCmdList, GPU::Resource* ptrDest, UINT64 bufferOffset = 0, bool allowBarries = true);
 
             // Create SRV for texture
             void CreateSRV(ID3D12Device* ptrDevice, D3D12_CPU_DESCRIPTOR_HANDLE handle, UINT mostDetailedMip = 0, FLOAT resourceMinLODClamp = 0.0f);

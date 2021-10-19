@@ -75,7 +75,7 @@ namespace MGX::Core::GType
             }
 
             // Array operator
-            unsigned char& operator[](unsigned int index);
+            unsigned char& operator[](UINT64 index);
 
         private:
             // Map this resource
@@ -111,9 +111,9 @@ namespace MGX::Core::GType
             MappedBuffer Map(UINT64 size = UINT64_MAX, UINT64 offset = 0);
 
             // Copy function to this buffer
-            bool CopyFrom(GPU::CommandList* ptrCmdList, Buffer* ptrSrcBuffer, UINT64 size = UINT64_MAX, UINT64 destOffset = 0, UINT srcOffset = 0);
+            bool CopyFrom(GPU::CommandList* ptrCmdList, Buffer* ptrSrcBuffer, UINT64 size = UINT64_MAX, UINT64 destOffset = 0, UINT64 srcOffset = 0);
             // Copy from this buffer
-            bool CopyTo(GPU::CommandList* ptrCmdList, Buffer* ptrDestBuffer, UINT64 size = UINT64_MAX, UINT64 destOffset = 0, UINT srcOffset = 0);
+            bool CopyTo(GPU::CommandList* ptrCmdList, Buffer* ptrDestBuffer, UINT64 size = UINT64_MAX, UINT64 destOffset = 0, UINT64 srcOffset = 0);
 
             // Create Views
             bool CreateCBV(ID3D12Device* ptrDevice, D3D12_CPU_DESCRIPTOR_HANDLE handle, UINT size = UINT_MAX, UINT64 offset = 0);

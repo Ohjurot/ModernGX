@@ -121,7 +121,7 @@ bool MGX::Core::GType::Texture::CopyTo(GPU::CommandList* ptrCmdList, Texture* pt
     return canCopy;
 }
 
-bool MGX::Core::GType::Texture::CopyFromBuffer(GPU::CommandList* ptrCmdList, GPU::Resource* ptrSrc, UINT bufferOffset, bool allowBarries)
+bool MGX::Core::GType::Texture::CopyFromBuffer(GPU::CommandList* ptrCmdList, GPU::Resource* ptrSrc, UINT64 bufferOffset, bool allowBarries)
 {
     // Vertify size
     bool canCopy = CheckSetResourceBarriers(ptrCmdList, ptrSrc, this, allowBarries);
@@ -160,7 +160,7 @@ bool MGX::Core::GType::Texture::CopyFromBuffer(GPU::CommandList* ptrCmdList, GPU
     return canCopy;
 }
 
-bool MGX::Core::GType::Texture::CopyToBuffer(GPU::CommandList* ptrCmdList, GPU::Resource* ptrDest, UINT bufferOffset, bool allowBarries)
+bool MGX::Core::GType::Texture::CopyToBuffer(GPU::CommandList* ptrCmdList, GPU::Resource* ptrDest, UINT64 bufferOffset, bool allowBarries)
 {
     // Vertify size
     bool canCopy = CheckSetResourceBarriers(ptrCmdList, this, ptrDest, allowBarries);

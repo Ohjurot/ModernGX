@@ -1,13 +1,12 @@
 /*
-*
-* TODO:   - Upload Buffers
+* TODO: - Not much error informations (FIX NOW!)
 * 
 * LIMITS: - No UAV
-*         - Not much error informations
 *         - TextureCopy from/to buffer can only copy the full texture
 *         - SRV for texture do not work for msaa
 *         - No Multithread guards implemented (locking exists but is not used)
 *         - WIC Image IO is just very basic (need way more attention)
+*         - Upload buffer can only operate with DIRECT command list (not COPY)
 */
 #include <ModernGX.h>
 #include <ModernGX/Util/Memory.h>
@@ -26,6 +25,7 @@
 
 #include <ModernGX/Core/GPUTypes/GTypeBuffer.h>
 #include <ModernGX/Core/GPUTypes/GTypeTexture.h>
+#include <ModernGX/Helpers/GPUUploadStack.h>
 
 #include <ModernGX/Coding/TextureCoding.h>
 
@@ -59,48 +59,39 @@ INT wWinMain_safe(HINSTANCE hInstance, PWSTR cmdArgs, INT cmdShow)
 
     // TEST
     
-    // Vertex buffer (incl. upload buffer)
+    // Upload buffer
+    Helpers::GPUUploadStack uploadBuffer(device, 1024 * 1024 * 64);
+    uploadBuffer.Reset(&list);
+
+    // Vertex buffer
     Core::GType::Buffer vertexBuffer(device, Core::GPU::HeapUsage::Default, 64 * sizeof(Vertex));
     vertexBuffer.name(L"Vertex Buffer");
-    Core::GType::Buffer vertexBufferUpl(device, Core::GPU::HeapUsage::Upload, 32 * 1024 * 1024);
-    vertexBufferUpl.name(L"Vertex Upload Buffer");
-
-    // CPU Load buffer
     Vertex vtxs[] = {
         {-0.5f, -0.5f, 0.0f, 1.0f},
         {-0.5f,  0.5f, 0.0f, 1.0f},
         { 0.5f, -0.5f, 0.0f, 1.0f},
         { 0.5f,  0.5f, 0.0f, 1.0f},
     };
-
-    Coding::TextureFile textureImg(L"./test.png");
-    auto imgStride = textureImg.GetChannelCount() * textureImg.GetWidth();
-    auto imgSize = imgStride * textureImg.GetHeight();
-    void* img = malloc(imgSize);
-    auto res = textureImg.ReadPixels(0, 0, textureImg.GetWidth(), textureImg.GetHeight(), img, imgSize, imgStride);
-
-    // View
+    uploadBuffer.CopyBuffer(&vertexBuffer, vtxs, sizeof(Vertex) * _countof(vtxs));
+    
+    // VBV View
     D3D12_VERTEX_BUFFER_VIEW vbv;
     vertexBuffer.CreateVBV<Vertex>(&vbv, __crt_countof(vtxs));
 
-    // Copy to cpu <--> cpu
-    auto mapped = vertexBufferUpl.Map();
-    mapped.TCopyFrom<Vertex>(vtxs, __crt_countof(vtxs));
-    mapped.CopyFrom(img, imgSize, 1024 * 64);
-    mapped.Unmap();
-
-    // Copy GPU
-    vertexBufferUpl.CopyTo(&list, &vertexBuffer, sizeof(Vertex) * __crt_countof(vtxs));
-    vertexBuffer.SetResourceState(D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, list.ResourceBarrierPeekAndPush());
-
-
     // Texture 
+    Coding::TextureFile textureImg(L"./test.png");
     Core::GType::Texture tex(device, Core::GPU::HeapUsage::Default, textureImg.GetDxgiFormat(), textureImg.GetWidth(), textureImg.GetHeight(), 0);
-    tex.CopyFromBuffer(&list, &vertexBufferUpl, 1024 * 64);
-    tex.SetResourceState(D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, list.ResourceBarrierPeekAndPush());
+    uploadBuffer.CopyTexture(&tex, &textureImg);
+    
+    // SRV Handle
     auto srvHandle = srvDescHeap.Allocate(1);
     tex.CreateSRV(device, srvHandle[0]);
 
+    // State changes
+    vertexBuffer.SetResourceState(D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER, list.ResourceBarrierPeekAndPush());
+    tex.SetResourceState(D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE, list.ResourceBarrierPeekAndPush());
+
+    // State and Root
     float buffer[4] = { 0.1f, 0.05f, 0.85f, 1.0f };
     Core::GPU::PipelineState state(device, L"Test.xml");
     Core::GPU::RootConfiguration rConf(state.GetType(), 2,
@@ -108,6 +99,9 @@ INT wWinMain_safe(HINSTANCE hInstance, PWSTR cmdArgs, INT cmdShow)
         Core::GPU::RootConfigurationEntry::MakeDescriptorTable(srvHandle[0])
     );
 
+
+    // No upload is required now
+    uploadBuffer.Close();
     // END 
 
     // Create window
