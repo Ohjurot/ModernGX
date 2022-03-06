@@ -1,3 +1,5 @@
+# As of 06.03.2022 this repository is archived. It was not quit on spot and hard to integrate into new projects. Please use the code from my Real Time Rendering Repo!
+
 # ModernGX
 Modern Framework to speed up Rendering &amp; Game development on Windows (DirectX 12)
 
